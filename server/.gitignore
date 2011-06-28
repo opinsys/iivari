@@ -6,3 +6,4 @@ config/organisations.yml
 config/database.yml
 config/initializers/secret_token.rb
 public/assets
+.jhw-cache
