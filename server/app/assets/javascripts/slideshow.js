@@ -116,16 +116,32 @@ function checkSlideTimerAndStatus(slide) {
 	return true;
     }
     else {
+        /* Slide timers check.
+        
+        Returns true if any of given timers are active now.
+        
+        FIXME: if the client is on without a web access for years,
+        all timers most likely be off next year -> unneeded support requests.
+        Maybe the timer should accept information without specific years.
+
+        Times are in UTC.
+        
+         */
 	var now = new Date();
 	for ( i = 0; i < timers.length; i++ ) {
 	    if ( ! timers[i]["weekday_" + now.getDay()] ) {
 		continue;
 	    }
 
+        // range start_datetime..end_datetime the period of days when timer is active
 	    var start_datetime = new Date(timers[i].start_datetime);
 	    var end_datetime = new Date(timers[i].end_datetime);
+
+        // range raw_start_time..raw_end_time the hours each day the timer is active
 	    var raw_start_time = new Date(timers[i].start_time);
 	    var raw_end_time = new Date(timers[i].end_time);
+
+        // range start_time..end_time is the hours the timer is active today
 	    var start_time = new Date( now.getFullYear(),
 		now.getMonth(),
 		now.getDate(),
@@ -136,11 +152,33 @@ function checkSlideTimerAndStatus(slide) {
 		now.getDate(),
 		raw_end_time.getHours(),
 		raw_end_time.getMinutes() );
-	    
+
+        /*
+        console.log("timer active between "+
+            start_datetime.getFullYear() +"-"+
+            (start_datetime.getMonth()+1) +"-"+
+            start_datetime.getDate() +
+            " - "+
+            end_datetime.getFullYear() +"-"+
+            (end_datetime.getMonth()+1) +"-"+
+            end_datetime.getDate() +
+            " at "+
+            raw_start_time.getHours() + ":"+
+            raw_start_time.getMinutes() +
+            " - "+
+            raw_end_time.getHours() + ":"+
+            raw_end_time.getMinutes()
+            );
+        */
+
+        // start_datetime or end_datetime may not be set, that's ok
 	    if ( (start_datetime.toString() == "Invalid Date" || now > start_datetime ) &&
 		 ( end_datetime.toString() == "Invalid Date" || now < end_datetime) ) {
+            // now is somewhere in between start_datetime and end_datetime
 
 		if ( now > start_time && now < end_time ) {
+            // hours match, at least one timer is active
+            console.log("timer matches");
 		    return true;
 		}
 	    }
