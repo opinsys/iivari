@@ -1,3 +1,6 @@
 <div class="full">
-  <img src="image/<%= @slide.template%>/<%= @slide.image %>?resolution=<%= @resolution %>">
+  <img src="image/<%= @slide.template%>/<%= @slide.image %>?resolution=<%= @resolution %>"
+  <%# rescale gif images on the client -%>
+  <%= (@slide.image_type == 'image/gif' ? 'style="width: 90%"' : '').html_safe -%>
+  >
 </div>

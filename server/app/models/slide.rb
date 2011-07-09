@@ -24,6 +24,10 @@ class Slide < OrganisationData
       "image/#{self.template}/#{self.image}?resolution=#{resolution}"
     end
   end
+  
+  def image_type
+    Image.find_by_key(self.image).content_type
+  end
 
   def self.image_urls(channel, resolution)
     channel.slides.inject([]) do |result, s|

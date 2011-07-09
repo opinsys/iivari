@@ -164,7 +164,13 @@ class ScreenController < ApplicationController
   def image
     expires_in 15.minutes, :public => true
     if image = Image.find_by_key(params[:image])
-      data_string = image.data_by_resolution(params[:template], params[:resolution])
+      # show original gif images, so gif animations
+      # can be shown on the client
+      if image.content_type == 'image/gif'
+        data_string = image.original_data
+      else
+        data_string = image.data_by_resolution(params[:template], params[:resolution])
+      end
       # FIXME image name?
       send_data data_string, :filename => image.key, :type => image.content_type, :disposition => 'inline'
     else

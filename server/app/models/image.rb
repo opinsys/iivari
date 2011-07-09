@@ -8,10 +8,18 @@ class Image < ActiveRecord::Base
     image = Image.find_by_key(key)
     if image.nil?
       image = Image.create(:key => key, :content_type => data.content_type)
-      File.open( Image.path + "/" + image.key, "wb") { |f| f.write(image_data) }
+      File.open( image.original, "wb") { |f| f.write(image_data) }
     end
 
     return image
+  end
+  
+  def original
+    Image.path + "/" + self.key
+  end
+  
+  def original_data
+    File.readlines( self.original )
   end
 
   def data_by_resolution(template, resolution)
