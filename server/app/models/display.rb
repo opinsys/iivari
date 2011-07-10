@@ -1,5 +1,10 @@
 class Display < OrganisationData
-  belongs_to :channel
+  # Display can have many channels in specific order.
+  # Channel position is stored in table "displays_channels".
+  has_many :displays_channels
+  has_many :channels, 
+    :through => :displays_channels,
+    :order => :position
 
   validates_presence_of :hostname
 
@@ -11,3 +16,4 @@ class Display < OrganisationData
     end
   end
 end
+

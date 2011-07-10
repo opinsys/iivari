@@ -1,6 +1,8 @@
 class Channel < OrganisationData
   has_many :slides, :order => "position"
-  has_many :displays
+  # channel can be on multiple displays
+  has_many :displays_channels
+  has_many :displays, :through => :displays_channels
 
   validates_presence_of :name
   validates_inclusion_of :slide_delay, :in => 2..600

@@ -25,9 +25,9 @@ describe Channel do
       assert @channel.displays.include?(display_1)
       assert @channel.displays.include?(display_2)
       assert @channel.displays.include?(display_3)
-      display_1.channel.should == @channel
-      display_2.channel.should == @channel
-      display_3.channel.should == @channel
+      display_1.channels.should == [@channel]
+      display_2.channels.should == [@channel]
+      display_3.channels.should == [@channel]
     end
   end
 

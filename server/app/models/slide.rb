@@ -2,6 +2,7 @@ class Slide < OrganisationData
   belongs_to :channel
   has_many :slide_timers
   
+  # ordered many-to-one association (many slides, one channel)
   acts_as_list :scope => :channel
 
   before_save :fix_http_url, :remove_image_if_needed
