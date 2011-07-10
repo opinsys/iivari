@@ -1,0 +1,24 @@
+<%# common slide template
+
+locals: theme
+%>
+
+<% if @slide.template == "web_page" %>
+
+<%= yield %>
+
+<% else %>
+
+<div class="title_container <%= theme -%>">
+  <h1 class="title"><%= @slide.title %></h1>
+</div>
+
+<div class="content">
+<%= yield %>
+</div>
+
+<% end %>
+
+<div class="footer_container <%= theme -%>">
+  &nbsp;
+</div>

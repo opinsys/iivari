@@ -1,9 +1,3 @@
-<% if @channel && @channel.theme? %>
-<%= stylesheet_link_tag "client/slide_theme_#{@channel.theme}" %>
-<% else %>
-<%= stylesheet_link_tag "client/slide_theme_gold" %>
-<% end %>
-
 <%# pass variables to client javascript (original slideshow) -%>
 <% content_for :slideshow do -%>
 

@@ -129,9 +129,15 @@ class ScreenController < ApplicationController
   def slide_to_screen_html(resolution, slide)
     @resolution = resolution
     @slide = slide
-    layout = (@channel && @channel.theme?) ? "slide_#{@channel.theme}" : "slide_gold"
-
-    render_to_string( "client_" + slide.template + ".html.erb", :layout => layout )
+    # Slide may be the "display_non_active_body" when
+    # display is inactive or no channel is set.
+    # Use default theme "gold".
+    theme = 
+      (@slide.channel and @slide.channel.theme?) ? 
+        @slide.channel.theme : "gold"
+    render_to_string("client_#{slide.template}.html.erb",
+      :layout => "slide",
+      :locals => {:theme => theme})
   end
 
   def auth_require
