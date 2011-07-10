@@ -109,9 +109,11 @@ fi:
     edit:
       title: Kanavan tietojen muokkaus
     form:
-      gold: Kulta
-      green: Vihreä
-      cyan: Sinivihreä
+      theme: Teema
+  themes:
+    gold: Kulta
+    green: Vihreä
+    cyan: Sinivihreä
   slides:
     show:
       confirm: Haluatko varmasti poistaa ruudun?

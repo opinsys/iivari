@@ -7,6 +7,10 @@ class Channel < OrganisationData
 
   using_access_control
 
+  def self.themes
+    %w{gold cyan green}
+  end
+
   def theme?
     (self.theme.nil? || self.theme.empty?) ? false : true
   end

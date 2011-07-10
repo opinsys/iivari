@@ -2,6 +2,12 @@
 <%= simple_form_for @channel, :url => url do |f| %>
 <%= f.input :name, :required => false %>
 <%= f.input :slide_delay %>
+
+<%# theme select %>
+<% themes = Channel.themes.collect{|theme| [t("themes.#{theme}"), theme]} %>
+<label for="channel_theme"><%= t('.theme') %></label>
+<%= f.select(:theme, themes, :selected => (@channel.theme || 'gold')) -%><br>
+
 <%= f.button :submit %>
--<%= t('links.or_cancel') %> <%= link_to t('links.cancel'), channels_path %>
+<%= t('links.or_cancel') %> <%= link_to t('links.cancel'), channels_path %>
 <% end %>
