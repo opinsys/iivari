@@ -14,12 +14,25 @@ html, body, .footer{
     left: 0;
     z-index: 5;
     font-size: 0.9em;
-    font-weight: normal
+    font-weight: normal;
 }
 .footer {
-    padding: 0.3em 1em 0.3em 1em;
+    padding: 0.3em 0.9em;
     font-size: 0.9em;
     font-weight: normal;
+}
+.footer_container #network-offline {
+    float: right;
+    margin: 0.2em 0.5em;
+    background-image: url('/assets/offline.png');
+    background-size: 1em;
+    background-repeat: no-repeat;
+    background-position: right;
+    padding-right: 2em;
+}
+.footer_container h3 {
+    float: left;
+    margin: 0;
 }
 
 .footer > * {

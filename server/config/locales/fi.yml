@@ -187,6 +187,8 @@ fi:
       logged_in_as: Kirjauduttu sisään käyttäjänä
       tools: Työkalut
       schools: Koulut
+    slide:
+      offline: verkkoyhteysvirhe
   notices:
     login_required: Sinun täytyy kirjautua päästäksesi tälle sivulle
     not_access: Sinulla ei ole riittäviä oikeuksia toiminnon suorittamiseksi
