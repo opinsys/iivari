@@ -8,7 +8,9 @@ function updateSlideData(url, cache) {
                 console.log("JSON data cached at "+attributes.cachedAt);
             }
             if (status != "notmodified") {
+                console.log("received new slide data");
                 slideData.json = json;
+                window.applicationCache.update();
             }
         });
     }
