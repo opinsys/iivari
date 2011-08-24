@@ -33,8 +33,6 @@ class ApplicationController < ActionController::Base
   end
 
   def set_organisation
-    logger.info "Request host: #{request.host}"
-
     if session[:organisation].nil?
       begin
         # Find organisation by request.host.
@@ -57,7 +55,10 @@ class ApplicationController < ActionController::Base
         return false
       end
     else
-      logger.info "Organisation in session: %s" % session[:organisation].inspect
+      logger.info 'Session organisation: "%s" @ %s' % [
+        (session[:organisation].organisation_key rescue 'nil'),
+        request.host]
+
       # Compare session host to client host. This is important security check.
       unless session[:organisation].host == request.host || session[:organisation].host == "*"
         # This is a serious problem. Some one trying to hack this system.
