@@ -55,6 +55,8 @@ describe ScreenController do
       display.active.should_not be_true
       assigns(:json_url).should == 'slides.json?resolution=800x600'
       response.should render_template("conductor")
+      display.reload
+      display.last_seen_at.should be_within(1).of(Time.now)
     end
 
     it "should render with active display without channel" do
@@ -77,6 +79,8 @@ describe ScreenController do
       assigns(:channel).should == channel
       assigns(:json_url).should == 'slides.json?resolution=800x600' 
       response.should render_template("conductor")
+      display.reload
+      display.last_seen_at.should be_within(1).of(Time.now)
     end
   end
 

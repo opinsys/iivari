@@ -3,6 +3,7 @@ class ScreenController < ApplicationController
   respond_to :html, :json
   layout "screen"
   before_filter :auth_require, :except => :displayauth
+  before_filter :log_last_seen_at, :except => :image
   after_filter :persist_session
   
   # GET /slides.json?resolution=800x600
@@ -158,5 +159,12 @@ class ScreenController < ApplicationController
 
   def persist_session
     request.env["rack.session.options"][:expire_after] = 20.years if session[:display_authentication]
+  end
+
+  # timestamp of client update request, issue #4
+  def log_last_seen_at
+    return unless @display
+    @display.last_seen_at = Time.now
+    @display.save
   end
 end
