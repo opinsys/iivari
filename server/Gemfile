@@ -24,11 +24,15 @@ gem 'puavo-client'
 # httparty "makes consuming restful web services dead easy."
 gem 'httparty'
 
+# ordered many-to-many associations
+gem 'acts_as_list'
+
+# rails3-compatible tiny_mce fork
+gem 'tinymce-rails', :git => "git://github.com/spohlenz/tinymce-rails.git"
+
 # iivari features
 gem "simple_form"
 gem "responders"
-gem 'tiny_mce'
-gem 'acts_as_list'
 gem 'rmagick', :require => 'RMagick'
 
 group :development do
