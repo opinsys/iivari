@@ -45,6 +45,7 @@ group :development do
   gem 'database_cleaner'
   gem 'capybara'
   gem 'sinatra'
+  gem 'guard-livereload'
 end
 
 group :production do
