@@ -1,6 +1,5 @@
 class SlidesController < ApplicationController
   respond_to :html, :js
-  uses_tiny_mce
 
   before_filter :find_channel
   filter_access_to( :index, :create, :new, :sort,

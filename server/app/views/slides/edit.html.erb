@@ -1,7 +1,3 @@
-<% content_for :javascript do %>
-  <%= include_tiny_mce_if_needed :content_css => stylesheet_path("slides/editor_content") %>
-<% end %>
-
 <h1><%= t('.title') %></h1>
 
 <div class="slide">
@@ -11,3 +7,5 @@
 <% content_for :tools do %>
 <div><%= link_to t('links.show'), channel_slide_path(@school.puavo_id, @channel, @slide), :class => "show"  %></div>
 <% end %>
+
+<%= render :partial => 'tinymce_init' -%>
