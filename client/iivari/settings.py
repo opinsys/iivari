@@ -6,7 +6,7 @@ from logging import FATAL, WARN, INFO, DEBUG
 import os
 
 # iivari server base URL
-SERVER_BASE = "http://localhost:3000"
+SERVER_BASE = "http://localhost:3000/displayauth"
 
 # base log and cache default root to repository main directory
 IIVARIDIR = os.path.join(os.environ['HOME'], '.iivari')
