@@ -1,15 +1,30 @@
 function updateSlideData(url, cache) {
     if(cache == true) {
-	$.retrieveJSON(url, function(json, status) {
-	    if (status != "notmodified") {
-		slideData.json = json;
-	    }
-	});
+        // jquery-offline handles transport errors
+        // NOTE: if offline (no network), but server is localhost, json data is not requested!
+        $.retrieveJSON(url, function(json, status, attributes) {
+            console.log("updateSlideData status: "+status+", received "+json.length+" JSON objects");
+            if (status == "cached") {
+                console.log("JSON data cached at "+attributes.cachedAt);
+            }
+            if (status != "notmodified") {
+                slideData.json = json;
+            }
+        });
     }
     else {
-	$.getJSON(url, function(data) {
-	    slideData.json = data;
-	});
+        $.ajax({
+          url: url,
+          dataType: 'json',
+          cache: false,
+          success: function(data, status, attributes) {
+              console.log("updateSlideData status: "+status+", received "+data.length+" JSON objects");
+              slideData.json = data;
+          },
+          error: function(req, error) {
+              console.warn("Warning: XHR status: "+req.status+ ": "+error);
+          }
+        });
     }
 }
 
