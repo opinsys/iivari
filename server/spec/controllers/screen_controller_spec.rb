@@ -220,4 +220,109 @@ describe ScreenController do
     end
   end
 
+
+  context "#display_ctrl.json" do
+    before :each do
+      @hostname_1 = 'infotv-01'
+      @hostname_2 = 'infotv-02'
+      @resolution = '800x600'
+      session[:display_authentication] = true
+      session[:organisation] = @organisation
+
+      @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
+      assert @channel_1.reload
+      @channel_2 = Channel.create(:name => 'test channel 2', :slide_delay => 8)
+      assert @channel_2.reload
+
+      @slide_11 = Slide.create(
+        :channel => @channel_1, 
+        :position => 1, 
+        :title => 'test title 11', :body => 'test body 11', :template => 'only_text')
+      @slide_12 = Slide.create(
+        :channel => @channel_1, 
+        :position => 2, 
+        :title => 'test title 12', :body => 'test body 12', :template => 'only_text')
+      @slide_21 = Slide.create(
+        :channel => @channel_2, 
+        :position => 1, 
+        :title => 'test title 21', :body => 'test body 21', :template => 'only_text')
+      @slide_22 = Slide.create(
+        :channel => @channel_2, 
+        :position => 2, 
+        :title => 'test title 22', :body => 'test body 22', :template => 'only_text')
+      @slide_23 = Slide.create(
+        :channel => @channel_2, 
+        :position => 3, 
+        :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
+      
+      # enable channel, activate displays
+      @display_1 = create_display(:hostname => @hostname_1, :channel => @channel_1, :active => true)
+      assert @display_1.reload
+      @display_2 = create_display(:hostname => @hostname_2, :channel => @channel_2, :active => true)
+      assert @display_2.reload
+    end
+
+    it "should get display" do
+      session[:hostname] = @hostname_2
+      get :display_ctrl, {:format => :json}
+      assert_response :success
+      assigns(:display).should == @display_2
+    end
+
+    it "should get timer json" do
+      poweroff_timer = {
+        :type => "poweroff",
+        :start_date => "2011/01/01",
+        :end_date => "2011/12/31",
+        :start_at => "00:00",
+        :end_at => "00:00",
+        'weekdays' => '*'
+      }
+      refresh_timer = {
+        :type => "refresh",
+        :start_date => "2011/02/01",
+        :end_date => "2011/11/31",
+        :start_at => "07:00",
+        'weekdays' => [0,2,4,6]
+      }
+
+      @organisation.control_timers = [poweroff_timer, refresh_timer]
+
+      session[:hostname] = @hostname_1
+      get :display_ctrl, {:resolution => @resolution, :format => :json}
+      assert_response :success
+      assigns(:display).should == @display_1
+
+      ctrl = JSON.parse response.body
+      self.assert ctrl
+      assert_equal @hostname_1, ctrl["hostname"]
+      assert_equal 7, ctrl["timers"].size
+
+      poweroff_timers = ctrl["timers"].collect{ |day|
+        day.select{|t| t["type"] == "poweroff"} }.flatten.compact
+      assert_equal 7, poweroff_timers.size
+      poweroff_timers.each{|t| assert_equal({
+        "type"=>"poweroff",
+        "start_date"=>"2011/01/01",
+        "end_date"=>"2011/12/31",
+        "end_at"=>"00:00",
+        "start_at"=>"00:00"
+        }, t)}
+
+      refresh_timers = [
+        ctrl["timers"][0].select{|t| t["type"] == "refresh"},
+        ctrl["timers"][2].select{|t| t["type"] == "refresh"},
+        ctrl["timers"][4].select{|t| t["type"] == "refresh"},
+        ctrl["timers"][6].select{|t| t["type"] == "refresh"}
+        ].flatten
+      assert_equal 4, refresh_timers.size
+      refresh_timers.each{|t| assert_equal({
+        "type"=>"refresh",
+        "start_date"=>"2011/02/01",
+        "end_date"=>"2011/11/31",
+        "start_at"=>"07:00"
+        }, t)}
+    end
+  end
+
 end

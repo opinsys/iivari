@@ -30,9 +30,11 @@ Iivari::Application.routes.draw do
 
   match 'conductor', :to => "screen#conductor", :as => "conductor_screen"
   match 'slides.json', :to => "screen#slides", :format => :json, :as => "conductor_slides"
+  match 'display_ctrl.json', :to => "screen#display_ctrl", :format => :json, :as => "conductor_display_ctrl"
   match 'image/:template/:image', :to => "screen#image", :as => "image_screen"
   match 'displayauth', :to => "screen#displayauth", :as => "display_authentication"
   match "screen.manifest", :to => "screen#manifest", :as => "manifest_screen"
+  match 'ping', :to => "screen#ping"
 
   resources :user_sessions
 

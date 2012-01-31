@@ -34,6 +34,49 @@ class ScreenController < ApplicationController
       end
     end
   end
+  
+  # JSON display control data.
+  #
+  # Sets poweroff and refresh timers. The timers are ordered in an array by weekday.
+  #
+  # Timers are configured in organisations.yml.
+  # A change in the config requires server restart to become effective,
+  # since Organisation model caches the configuration data.
+  #
+  # GET /display_ctrl.json?resolution=600x800
+  def display_ctrl
+    unless @display
+      logger.warn "No display"
+      render :nothing => true, :status => 404
+      return
+    end
+    
+    # Order timers_json by weekday.
+    # This makes the result array a bit bigger to store in memory, but easier
+    # for the JavaScript to parse on the client.
+    timers = Organisation.current.value_by_key('control_timers')
+    timers_json = [[],[],[],[],[],[],[]]
+    unless timers
+      logger.info "No control timers set in organisations.yml"
+    else
+      timers.each do |_t|
+        # remove weekdays from the hash, and push the rest of the timer data
+        # into the corresponding days in the timers_json,
+        # a day can be either an integer (0-6) or "*".
+        # when it is *, push this timer for each day of the week.
+        timer = _t.dup # operate on a copy
+        weekdays = timer.delete('weekdays')
+        weekdays = (0..6) if weekdays=='*'
+        weekdays.each{|day| timers_json[day].push(timer)}
+      end
+    end
+    ctrl_json = {
+      :hostname => session[:hostname],
+      :timers => timers_json
+      }
+    #logger.debug ctrl_json.inspect
+    render :json => ctrl_json.to_json
+  end
 
   # GET /conductor?resolution=800x600&hostname=examplehost
   # GET /conductor?cache=false&slide_id=40
@@ -62,6 +105,16 @@ class ScreenController < ApplicationController
       @json_url += "?" + url_params.join("&")
     end
     
+    # Get data_update_interval from organisations.yml config file.
+    # Config sets it in seconds, JavaScript needs it in msec.
+    # Default is 24 hours.
+    @data_update_interval =
+      ( Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000
+    
+    # The interval to fetch the display control JSON data
+    @ctrl_update_interval =
+      ( Organisation.current.value_by_key('control_update_interval') || 60 * 60 * 24 ) * 1000
+
     respond_to do |format|
       format.html
     end
@@ -97,6 +150,14 @@ class ScreenController < ApplicationController
     body << ""
 
     render :text => body.join("\n"), :content_type => "text/cache-manifest"
+  end
+
+  # The ping action is for clients to check for network / server
+  # status to display "connectivity error" unless a response is received.
+  #
+  # HEAD /ping
+  def ping
+    render :text => ''
   end
 
   # GET /image/only_image/e59e7f6a488088e675b3736681abf2ef55ce69d28360903cb56fa8cfb69c9155?resolution=800x600

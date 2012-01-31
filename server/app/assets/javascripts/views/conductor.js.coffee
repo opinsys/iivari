@@ -21,12 +21,16 @@ class Iivari.Views.Conductor extends Backbone.View
 
     window.slideNumber = 0    # slideshow v1, native javascript
     window.slideData = new Object()
+    window.display = null     # backend proxy object for signaling
+    Iivari.displayCtrl = null # display logic
+    Iivari.onLine = true      # custom window.navigator.onLine replacement
 
     # NOTE: requires global window objects with the original native slideshow:
     #  * window.json_url (string)
     #  * window.cache (boolean)
     #  * window.preview (boolean)
-    #  * window.data_update_interval (integer is ms)
+    #  * window.data_update_interval (integer in ms)
+    #  * window.ctrl_update_interval
     initialize: ->
         super()
         jqs5_init()
@@ -34,4 +38,6 @@ class Iivari.Views.Conductor extends Backbone.View
         showNextSlide(!preview)
         unless preview
             setInterval((() -> updateSlideData(json_url, cache)), data_update_interval)
+            # DisplayCtrl runs control timers and handles kiosk backend signaling.
+            Iivari.displayCtrl = new Iivari.Models.DisplayCtrl("/display_ctrl.json", ctrl_update_interval)
 

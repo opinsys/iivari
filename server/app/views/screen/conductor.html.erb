@@ -4,6 +4,7 @@
 	window.json_url = "<%= @json_url.html_safe %>";
 	window.cache = <%= @cache %>;
 	window.preview = <%= @preview %>;
-	window.data_update_interval = <%= (Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000 %>;
+	window.data_update_interval = <%= @data_update_interval %>;
+	window.ctrl_update_interval = <%= @ctrl_update_interval %>;
 
 <% end %>

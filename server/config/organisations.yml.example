@@ -13,3 +13,44 @@ default:
   ldap_method: none
   # The number of seconds between update checks (data of slides)
   data_update_interval: 60
+
+  # Client control timers may be used to set display power off and refresh times.
+  # Active weekdays can be given as an integer in range 0 to 6.
+  # The wildcard * can be used to set the timer active on all days.
+  # This configuration file is read at each request, so there is
+  # no need to restart the server after modifying the timers.
+  control_update_interval: 600
+  control_timers:
+    -
+      # power off display every evening throughout period 2011-2012
+      type: "poweroff"
+      start_date: "2011/06/01"
+      end_date: "2012/05/31"
+      start_at: "17:00"
+      end_at: "07:30"
+      weekdays: *
+    -
+      # power off display completely on weekends throughout period 2011-2012
+      type: "poweroff"
+      start_date: "2011/06/01"
+      end_date: "2012/05/31"
+      start_at: "00:00"
+      end_at: "23:59"
+      weekdays: [5, 6]
+    -
+      # make an exception to the display power off for one day
+      type: "poweron"
+      start_date: "2011/08/20"
+      end_date: "2012/08/20"
+      start_at: "07:00"
+      end_at: "22:00"
+      weekdays: *
+    -
+      # refresh every morning throughout period 2011-2012
+      # on weekdays Monday through Friday
+      type: "refresh"
+      start_date: "2011/06/01"
+      end_date: "2012/05/31"
+      start_at: "07:30"
+      weekdays: [0, 1, 2, 3, 4]
+
