@@ -29,4 +29,41 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
+
+  config.before(:each) do
+    @organisation = MockOrganisation.new
+    @organisation.organisation_key = 'default'
+    @organisation.host = '*'
+    Organisation.current= @organisation
+  end
 end
+
+
+class MockOrganisation
+  attr_accessor :organisation_key, :host
+  alias :key :organisation_key
+  
+  attr_writer :control_timers
+  
+  def name
+    'test organisation'
+  end
+  
+  def value_by_key key
+    case key
+    when 'control_timers'
+      @control_timers
+    else 'test_'+key
+    end
+  end
+end
+
+def create_display *args
+  count = Display.count
+  display = Display.create(args).first
+  assert_equal @organisation.organisation_key, display.organisation
+  assert_equal count+1, Display.count
+  return display
+end
+  
+
