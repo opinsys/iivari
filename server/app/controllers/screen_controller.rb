@@ -157,6 +157,6 @@ class ScreenController < ApplicationController
   end
 
   def persist_session
-    env["rack.session.options"][:expire_after] = 20.years if session[:display_authentication]
+    request.env["rack.session.options"][:expire_after] = 20.years if session[:display_authentication]
   end
 end
