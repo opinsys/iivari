@@ -2,6 +2,8 @@ class UserSessionsController < ApplicationController
   skip_before_filter :require_user, :except => [:destroy]
   skip_before_filter :find_school
 
+  layout "user_sessions"
+
   def new
     @user_session = UserSession.new
   end
