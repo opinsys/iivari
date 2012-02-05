@@ -4,6 +4,18 @@ require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
 
+# http://www.ruby.code-experiments.com/blog/2011/02/rspec-rails-3-and-authlogic.html
+require 'authlogic/test_case'
+include Authlogic::TestCase
+
+require 'factory_girl'
+Factory.define :valid_user, :class => User do |u| 
+  u.login "Test User"
+  u.persistence_token lambda{(0...8).map{65.+(rand(25)).chr}.join} # random string
+  u.puavo_id 1
+  u.role_symbols [:organisation_owner]
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
@@ -35,6 +47,17 @@ RSpec.configure do |config|
     @organisation.organisation_key = 'default'
     @organisation.host = '*'
     Organisation.current= @organisation
+
+    # authlogic will raise an error if factory girl attempts to create
+    # same user more than once, prevent that.
+    user = User.find_by_login("Test User")
+    user.destroy if user
+
+    # authorize user
+    activate_authlogic
+    @user = Factory.create(:valid_user)
+    #UserSession.create(@user)
+    Authorization.stub!(:current_user).and_return(@user)
   end
 end
 
