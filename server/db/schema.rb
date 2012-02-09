@@ -14,8 +14,8 @@ ActiveRecord::Schema.define(:version => 20110913074947) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.string   "organisation"
     t.integer  "slide_delay"
     t.string   "theme"
@@ -27,30 +27,30 @@ ActiveRecord::Schema.define(:version => 20110913074947) do
     t.integer  "channel_id"
     t.string   "hostname"
     t.string   "organisation"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
   end
 
   create_table "images", :force => true do |t|
     t.string   "key"
     t.string   "content_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "school_admin_groups", :force => true do |t|
     t.integer  "school_id"
     t.integer  "group_id"
     t.string   "organisation"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "sessions", :force => true do |t|
     t.string   "session_id", :null => false
     t.text     "data"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
@@ -62,8 +62,8 @@ ActiveRecord::Schema.define(:version => 20110913074947) do
     t.datetime "start_time"
     t.datetime "end_time"
     t.integer  "slide_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.boolean  "weekday_0",      :default => true
     t.boolean  "weekday_1",      :default => true
     t.boolean  "weekday_2",      :default => true
@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(:version => 20110913074947) do
   create_table "slides", :force => true do |t|
     t.string   "title"
     t.text     "body"
-    t.datetime "created_at"
+    t.datetime "created_at",                     :null => false
     t.string   "image"
     t.string   "template"
     t.integer  "channel_id"
@@ -94,8 +94,8 @@ ActiveRecord::Schema.define(:version => 20110913074947) do
     t.datetime "current_login_at"
     t.string   "last_login_ip"
     t.string   "current_login_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
     t.string   "organisation"
     t.string   "dn"
     t.integer  "puavo_id"
