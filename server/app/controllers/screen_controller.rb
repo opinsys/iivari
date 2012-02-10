@@ -42,6 +42,8 @@ class ScreenController < ApplicationController
     @cache = "true"
     url_params = []
 
+    # preview mode is activated when slide_id is given
+    @preview = params[:slide_id] ? true : false
     if params[:slide_id]
       url_params.push "slide_id=#{params[:slide_id]}"
     end

@@ -7,15 +7,16 @@
 <html>
 <% end %>
 <head>
-  <meta charset=utf-8 />
+  <meta charset="utf-8" />
   <title>Iivari</title>
-
-  <%= javascript_include_tag "application" %>
   <%= csrf_meta_tag %>
 </head>
 <body>
 
-  <%= yield %>
+  <%= javascript_tag do %>
+	<%= yield(:slideshow) %>
+  <% end %>
+  <%= javascript_include_tag "client" %>
 
 </body>
 </html>

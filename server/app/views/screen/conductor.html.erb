@@ -3,18 +3,13 @@
 <% else %>
 <%= stylesheet_link_tag "client/slide_theme_gold" %>
 <% end %>
-<%= javascript_include_tag "jquery.offline" %>
-<%= javascript_include_tag "jqs5.opinsys" %>
-<%= javascript_include_tag "slideshow" %>
 
-<%= javascript_tag do %>
-    var slideNumber = 0;
-    $(document).ready(jqs5_init);
+<%# pass variables to client javascript (original slideshow) -%>
+<% content_for :slideshow do -%>
 
-    slideData = new Object();
-    updateSlideData('<%= @json_url.html_safe %>', <%= @cache %>);
-    $(document).ready(function() { showNextSlide(<%= params[:slide_id] ? false : true %>); });
-    <% if params[:slide_id].nil? %>
-    setInterval( "updateSlideData('<%= @json_url.html_safe %>', <%= @cache %>)", <%= ( Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000 %>);
-    <% end %>
+	window.json_url = "<%= @json_url.html_safe %>";
+	window.cache = <%= @cache %>;
+	window.preview = <%= @preview %>;
+	window.data_update_interval = <%= (Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000 %>;
+
 <% end %>
