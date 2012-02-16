@@ -41,12 +41,12 @@ group :development do
   gem "ruby-debug"
   gem 'mongrel'
   gem 'database_cleaner'
-  gem 'capybara'
-  gem 'sinatra'
   gem 'guard-livereload'
 end
 
-group :development, :test do
+group :test do
+  gem 'sinatra'
+  gem 'capybara'
   gem 'rspec-rails', '>= 2.8.1'
   gem 'cucumber'
   gem 'cucumber-rails'
