@@ -142,9 +142,9 @@ ul.menu ul ul{
 }
 
 ul.menu li:hover li:hover li,
-ul.menu li:hover li:hover li a, {
+ul.menu li:hover li:hover li a, 
 ul.menu li.hover li.hover /* protofish */ li,
-ul.menu li.hover li.hover /* protofish */ li a
+ul.menu li.hover li.hover /* protofish */ li a {
         color: #7c7c7c;
 }
 
