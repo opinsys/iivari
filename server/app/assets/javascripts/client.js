@@ -4,6 +4,22 @@
 //= require underscore
 //= require backbone
 //= require slideshow
-//= require main
 
-Iivari.init();
+//= require_self
+//= require_tree ./models
+//= require_tree ./views
+
+window.Iivari = {
+    Models: {},
+    Collections: {},
+    Routers: {},
+    Views: {},
+    init: function() {
+        // no routing! only one view!
+        new Iivari.Views.Conductor();
+    }
+};
+
+$(document).ready(function() {
+    Iivari.init();
+});

@@ -7,14 +7,9 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
-//= require underscore
-//= require backbone
-//= require main
 
 /** Console logger may not be available. Shiv to /dev/null. */
 if(typeof(console) === 'undefined') {
     var console = {};
     console.log = console.error = console.info = console.debug = console.warn = function() {};
 }
-
-Iivari.init();
