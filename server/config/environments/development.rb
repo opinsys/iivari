@@ -26,5 +26,6 @@ Iivari::Application.configure do
   config.assets.compress = false
 
   # Expands the lines which load the assets
+  # NOTE: to debug client offline caching, set this to false!
   config.assets.debug = true
 end

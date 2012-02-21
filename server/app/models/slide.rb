@@ -30,6 +30,7 @@ class Slide < OrganisationData
   end
 
   def self.image_urls(channel, resolution)
+    return [] unless channel
     channel.slides.inject([]) do |result, s|
       s.image.nil? ? result : ( result.push s.image_url(resolution) )
     end

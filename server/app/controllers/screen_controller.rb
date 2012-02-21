@@ -82,7 +82,7 @@ class ScreenController < ApplicationController
   # GET /conductor?cache=false&slide_id=40
   # Main page for Iivari client
   def conductor
-    @cache = "true"
+    @cache = true
     url_params = []
 
     # preview mode is activated when slide_id is given
@@ -94,7 +94,7 @@ class ScreenController < ApplicationController
       url_params.push "resolution=#{params[:resolution]}"
     end
     if params[:cache] && params[:cache] == "false"
-      @cache = "false"
+      @cache = false
     end
     if params[:channel_id]
       url_params.push "channel_id=#{params[:channel_id]}"
@@ -115,35 +115,73 @@ class ScreenController < ApplicationController
     @ctrl_update_interval =
       ( Organisation.current.value_by_key('control_update_interval') || 60 * 60 * 24 ) * 1000
 
+    @manifest_url = manifest_screen_path(:resolution => params[:resolution])
+
     respond_to do |format|
       format.html
     end
   end
 
+  # Manifest
+  #
+  # Compiles a dynamic HTML5 manifest file for the client.
+  # This enables the client to work without a network connection
+  # once it has cached all assets onto its local hard drive.
+  #
+  # Clients get the manifest url when they request conductor.
+  # Without a session cookie, the conductor response will be 
+  # redirect 302, and iivari-client does not cache the page.
+  # Therefore the conductor path is explicitly added to the manifest.
+  # The order of parameters has to match exactly the same
+  # as on the client, so conductor_screen_path helper cannot be used.
+  #
+  # The client updates the local cache only when the manifest
+  # contents have changed.
+  # In production, the assets should be precompiled using the built-in
+  # rake task "assets:precompile" that calculates a digest checksum
+  # for each asset file. When the file contents change, the digest will
+  # be different. The task writes a manifest.yml file that contains
+  # the current digest of each file.
+  # In development, only slide images will be cached.
+  #
+  # NOTE: if even a single file in the manifest is not found,
+  # ALL FILES IN THE MANIFEST ARE DISCARDED!
+  #
   # GET /screen.manifest?resolution=800x600
   def manifest
     body = ["CACHE MANIFEST"]
-    
-    # FIXME
-    body << "# zo36ld9k4ajd2io20dmzsdds"
-
-    root = Rails.public_path
-    # FIXME, adds only the necessary files
-    files = Dir[
-                "#{root}/stylesheets/**/*.css",
-                "#{root}/javascripts/**/*.js",
-                "#{root}/images/**"]
-    
-    files.each do |file|
-      body << root_path +  Pathname(file).relative_path_from( Pathname(root) ).to_s
+    body << "CACHE:"
+    if Rails.env == "production"
+      # Cache client JS and CSS with digest checksum.
+      begin
+        digests = YAML.load((
+          Iivari::Application.config.assets.manifest || Rails.root.join("public/assets")
+        ).join("manifest.yml").read)
+        # The dependencies (jQuery, underscore, etc) are bundled into client.js.
+        %w{
+          client.js
+          client.css
+        }.each do |asset|
+          body << root_path+"assets/#{digests[asset]}"
+        end
+      rescue
+        logger.error $!
+        logger.warn "Client is unable to use offline cache!"
+      end
     end
 
+    # Cache conductor.
     body << root_path + "conductor?resolution=#{params[:resolution]}&hostname=#{session[:hostname]}"
 
+    # Cache offline icon.
+    body << root_path+"assets/offline.png"
+
+    # Cache slide images.
     Slide.image_urls(@channel, params[:resolution]).each do |url|
       body << root_path + url
     end
 
+    # Use network for any other request.
     body << ""
     body << "NETWORK:"
     body << "/"

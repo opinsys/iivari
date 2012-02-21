@@ -1,11 +1,5 @@
 <!DOCTYPE html>
-<% if @cache == "true" %>
-<html manifest="<%= manifest_screen_path( :resolution => ( params.has_key?(:resolution) ?
-                                                           params[:resolution].to_s :
-                                                           "") ) %>">
-<% else %>
-<html>
-<% end %>
+<html<% if @cache %> manifest="<%= @manifest_url.html_safe %>"<% end %>>
 <head>
   <meta charset="utf-8" />
   <title>Iivari</title>
