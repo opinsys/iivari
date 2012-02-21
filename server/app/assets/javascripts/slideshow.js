@@ -5,10 +5,10 @@ function updateSlideData(url, cache) {
         $.retrieveJSON(url, function(json, status, attributes) {
             console.log("updateSlideData status: "+status+", received "+json.length+" JSON objects");
             if (status == "cached") {
-                console.log("JSON data cached at "+attributes.cachedAt);
+                //console.log("slide data cached at "+attributes.cachedAt);
             }
             if (status != "notmodified") {
-                console.log("received new slide data");
+                //console.log("received new slide data");
                 slideData.json = json;
                 window.applicationCache.update();
             }

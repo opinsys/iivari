@@ -33,8 +33,6 @@ class Iivari.Models.DisplayCtrl
     #    and execute interval should be ~minute
     #
     constructor: (@json_url, @update_interval) ->
-        console.log "DisplayCtrl UA: #{window.navigator.userAgent}"
-
         @ctrlData = new Object()
         @getCtrlData() # load control data from server
 
@@ -45,16 +43,14 @@ class Iivari.Models.DisplayCtrl
         if @network_check_interval
             # network online/offline check
             setInterval @checkConnectivity, @network_check_interval
-            console.log "/ping interval: #{@network_check_interval/1000} sec"
         if @update_interval
             # load new json data
             setInterval @getCtrlData, @update_interval
-            console.log "#{@json_url} interval: #{@update_interval/1000} sec"
         if @execute_interval
             # execute timers
             setInterval @executeCtrlData, @execute_interval
-            console.log "timer evaluation interval: #{@execute_interval/1000} sec"
 
+        console.log "Info: DisplayCtrl action intervals: /ping: #{@network_check_interval/1000} sec ; #{@json_url}: #{@update_interval/1000} sec ; timer: #{@execute_interval/1000} sec"
 
     # check network online/offline status by requesting
     # HTTP HEAD from the server
@@ -149,7 +145,7 @@ class Iivari.Models.DisplayCtrl
 
 
     $(window.applicationCache).bind 'checking', (event) ->
-        console.log 'Info: checking manifest'
+        #console.log 'Info: checking manifest'
 
     $(window.applicationCache).bind 'downloading', (event) ->
         console.log 'downloading file into cache'
@@ -158,7 +154,7 @@ class Iivari.Models.DisplayCtrl
     #  console.log 'file downloaded'
 
     $(window.applicationCache).bind 'noupdate', (event) ->
-        console.log 'no updates to manifest'
+        #console.log 'no updates to manifest'
 
     $(window.applicationCache).bind 'cached', (event) ->
         console.log 'Info: offline caching complete'
