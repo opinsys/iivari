@@ -239,54 +239,7 @@ class ScreenController < ApplicationController
     end
   end
 
-  # REST API for creating Display password.
-  # Password verifier is stored to the database.
-  # FIXME: authorize
-  def generate_credentials
-    unless request.post?
-      render :text => "GET not accepted", :status => 400
-      return
-    end
-    hostname = params[:hostname]
-    unless hostname
-      render :text => "No hostname given", :status => 400
-      return
-    end
-    # find Display params[:hostname] from database
-    display = Display.find_or_create_by_hostname(hostname)
-    # generate new password and save verifier
-    password = random_password
-    # use hostname as salt for simplicity
-    display.verifier = Digest::SHA1.hexdigest "#{hostname}:#{password}"
-    display.save
-    render :json => {:password => password}.to_json
-  end
-
   private
-
-  CHARS = ('0'..'9').to_a + ('A'..'Z').to_a + ('a'..'z').to_a + %w(. , ! ? @ & :)
-  def random_password(length=10)
-    CHARS.sort_by { Kernel.rand }.join[0...length]
-  end
-
-  # Display authentication data is passed in X-IIVARI-AUTH header.
-  # It contains <hostname>:<verifier>
-  def verify_credentials
-    auth = request.env["rack.session"]["X-IIVARI-AUTH"]
-    return false unless auth
-
-    (hostname, verifier) = auth.split(":")
-    logger.debug "Authentication attempt for #{hostname}"
-    display = Display.find_by_hostname(hostname)
-    return false unless display
-    return false unless display.verifier
-
-    if display.verifier == verifier
-      session[:hostname] = hostname
-      return true
-    end
-    return false
-  end
 
   def slide_to_screen_html(resolution, slide)
     @resolution = resolution

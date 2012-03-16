@@ -10,6 +10,7 @@ Iivari::Application.routes.draw do
     end
   end
   resources :displays, :path => ':school_id/displays'
+  match '/authkey/:action', :to => "authkey"
 
   match '/channels/welcome', :to => "channels#welcome", :as => 'welcome'
   resources :channels, :path => ':school_id/channels' do
