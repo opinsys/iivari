@@ -20,14 +20,16 @@ class AuthkeyController < ApplicationController
     # generate new password and save verifier
     key = random_string
     # use hostname as salt for simplicity
-    display.verifier = Digest::SHA1.hexdigest "#{hostname}:#{key}"
+    verifier = Digest::SHA1.hexdigest "#{hostname}:#{key}"
+    logger.debug "key: #{key} verifier: #{verifier}"
+    display.verifier = verifier
     display.save
     render :text => key
   end
 
   # Verifies the X-Iivari-Auth request header.
   # Responds with "ok" or "unauthorized".
-  # GET /authkey/verify, data: {username, password}
+  # POST /authkey/verify, data: {username, password}
   def verify
     status = verify_credentials ? :ok : :unauthorized
     render :text => status.to_s, :status => status
@@ -35,6 +37,7 @@ class AuthkeyController < ApplicationController
 
   private
 
+  # Authorize user.
   def authorize_user
     @user_session = UserSession.new({
       :login => params[:username], :password => params[:password]})
@@ -60,22 +63,24 @@ class AuthkeyController < ApplicationController
   def verify_credentials
     token = request.headers["X-Iivari-Auth"]
     unless token
-      logger.warn "Authorization header missing"
+      logger.warn "X-Iivari-Auth header is undefined"
       return false
     end
 
     (hostname, key) = token.split(":")
     return false unless key
 
-    logger.debug "Authentication attempt for #{hostname}"
     display = Display.find_by_hostname(hostname)
     return false unless display
     return false unless display.verifier
 
+    # does the key match?
     if display.verifier == key
-      session[:hostname] = hostname
+      logger.info "#{hostname} is authenticated"
       return true
+    else
+      logger.warn "#{hostname} is not authenticated"
+      return false
     end
-    return false
   end
 end
