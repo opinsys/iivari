@@ -201,19 +201,25 @@ class ScreenController < ApplicationController
   # GET /image/only_image/e59e7f6a488088e675b3736681abf2ef55ce69d28360903cb56fa8cfb69c9155?resolution=800x600
   def image
     expires_in 15.minutes, :public => true
-    if image = Image.find_by_key(params[:image])
-      # show original gif images, so gif animations
-      # can be shown on the client
-      if image.content_type == 'image/gif'
-        data_string = image.original_data
-      else
-        data_string = image.data_by_resolution(params[:template], params[:resolution])
+    begin
+      if image = Image.find_by_key(params[:image])
+        # show original gif images, so gif animations
+        # can be shown on the client
+        if image.content_type == 'image/gif'
+          data_string = image.original_data
+        else
+          data_string = image.data_by_resolution(params[:template], params[:resolution])
+        end
+        # FIXME image name?
+        send_data data_string, :filename => image.key, :type => image.content_type, :disposition => 'inline'
+        return
       end
-      # FIXME image name?
-      send_data data_string, :filename => image.key, :type => image.content_type, :disposition => 'inline'
-    else
-      render :nothing => true
+    rescue
+      # Error 404 would cause cache manifest to fail,
+      # all exceptions should be caught.
+      logger.warn $!.message
     end
+    render :nothing => true
   end
 
   # GET /displayauth?resolution=1366x768&hostname=infotv-01
