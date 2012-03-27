@@ -2,6 +2,8 @@ class ScreenController < ApplicationController
   skip_before_filter :require_user, :find_school
   respond_to :html, :json
   layout "screen"
+  # authenticate via X-Iivari-Auth
+  before_filter :displayauth_verify, :except => :displayauth
   before_filter :auth_require, :except => :displayauth
   before_filter :log_last_seen_at, :except => :image
   after_filter :persist_session
@@ -226,8 +228,18 @@ class ScreenController < ApplicationController
     render :nothing => true
   end
 
+  # Authenticates display session.
+  #
+  # Session will be authorized (and authenticated) if 
+  # a hostname is passed in parameters.
+  #
+  # This authentication mechanism works with stock client browsers.
+  # Custom Iivari-client uses displayauth_verify filter which is more
+  # secure, and depends on client ability to set custom HTTP headers.
+  #
   # GET /displayauth?resolution=1366x768&hostname=infotv-01
   def displayauth
+    logger.warn "Using deprecated displayauth"
     respond_to do |format|
       if params[:hostname]
         session[:display_authentication] = true 
@@ -240,6 +252,41 @@ class ScreenController < ApplicationController
   end
 
   private
+
+  # Authenticates display session.
+  #
+  # Display authentication token is passed in X-Iivari-Auth header.
+  # The token contains <hostname>:<verifier>
+  def displayauth_verify
+    begin
+      token = request.headers["X-Iivari-Auth"]
+      unless token
+        raise "X-Iivari-Auth header is undefined"
+      end
+
+      (hostname, key) = token.split(":")
+      raise "No key" unless key
+
+      display = Display.find_by_hostname(hostname)
+      raise "Unknown display #{hostname}" unless display
+      raise "Display #{hostname} has no stored verifier" unless display.verifier
+
+      # does the key match?
+      if display.verifier == key
+        logger.info "Display #{hostname} is authenticated"
+        session[:display_authentication] = true
+        session[:hostname] = hostname
+        @display = display
+        return true
+      else
+        raise "#{hostname} verifier does not match"
+      end
+    rescue
+      logger.warn $!.message
+      render :inline => "Unauthorized", :status => :unauthorized
+      return
+    end
+  end
 
   def slide_to_screen_html(resolution, slide)
     @resolution = resolution
@@ -262,10 +309,13 @@ class ScreenController < ApplicationController
       @channel = Slide.find(params[:slide_id]).channel if params[:slide_id]
     else
       if session[:display_authentication]
-        logger.info "Display #{session["hostname"]}, session_id #{session["session_id"]}"
-        @display = Display.find_or_create_by_hostname(session[:hostname])
+        # logger.info "Display #{session["hostname"]}, session_id #{session["session_id"]}"
+        # @display may already be loaded in displayauth_verify
+        @display ||= Display.find_or_create_by_hostname(session[:hostname])
         @channel = @display.active ? @display.channel : nil
       else
+        # FIXME: after moving to displayauth_verify, 
+        # this should not redirect to less secure displayauth!
         respond_to do |format|
           format.html { redirect_to display_authentication_path( :resolution => params[:resolution],
                                                                  :hostname => params[:hostname] ) }

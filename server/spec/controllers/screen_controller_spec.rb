@@ -4,6 +4,7 @@ require 'spec_helper'
 describe ScreenController do
   render_views
 
+  # displayauth is for stock browsers -- insecure
   describe "#displayauth" do
     it "should unauthorize" do
       get :displayauth
@@ -33,34 +34,59 @@ describe ScreenController do
     end
   end
 
+
+  # more secure authentication method
+  # - more thorough testing is carried out in authkey_controller_spec
+  describe "#displayauth_verify filter" do
+    before :each do
+      @hostname = 'infotv-01'
+      @verifier = "XYZ"
+      @display = create_display :hostname => @hostname, :active => true, :verifier => @verifier
+    end
+
+    it "should unauthorize unknown display" do
+      get :conductor, {:hostname => "unknown"}
+      assert_response :unauthorized
+    end
+
+    it "should unauthorize with missing X-Iivari-Auth header" do
+      get :conductor, {:hostname => @hostname}
+      assert_response :unauthorized
+    end
+
+    it "should unauthorize with incorrect verifier" do
+      request.env['X-Iivari-Auth'] = "#{@hostname}:XXX"
+      get :conductor, {:hostname => @hostname}
+      assert_response :unauthorized
+    end
+
+    it "should authorize" do
+      request.env['X-Iivari-Auth'] = "#{@hostname}:#{@verifier}"
+      get :conductor, {:hostname => @hostname}
+      assert_response :success
+    end
+  end
+
+
   describe "#conductor" do
     before :each do
       @hostname = 'infotv-01'
       @resolution = '800x600'
-      session[:display_authentication] = true
-      session[:hostname] = @hostname
+      @verifier = "XYZ"
+      request.env['X-Iivari-Auth'] = "#{@hostname}:#{@verifier}"
     end
 
     it "should render with inactive display" do
-      # get conductor without existing Display, so by default it is inactive
-      Display.count.should == 0
+      display = create_display :hostname => @hostname, :active => false, :verifier => @verifier
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
-      Display.count.should == 1
-      
-      display = assigns(:display)
-      display.should == Display.find_by_hostname(@hostname)
-      display.hostname.should == @hostname
-      display.organisation.should == @organisation.key
-      display.active.should_not be_true
-      assigns(:json_url).should == 'slides.json?resolution=800x600'
+      assigns(:display).should == display
+      assigns(:json_url).should == 'slides.json?resolution=800x600' 
       response.should render_template("conductor")
-      display.reload
-      display.last_seen_at.should be_within(1).of(Time.now)
     end
 
     it "should render with active display without channel" do
-      display = create_display :hostname => @hostname, :active => false
+      display = create_display :hostname => @hostname, :active => true, :verifier => @verifier
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
       assigns(:display).should == display
@@ -69,7 +95,7 @@ describe ScreenController do
     end
 
     it "should render with active display and channel" do
-      display = create_display :hostname => @hostname, :active => true
+      display = create_display :hostname => @hostname, :active => true, :verifier => @verifier
       channel = Channel.create(:name => 'test channel 1', :slide_delay => 2)
       display.channel = channel
       display.save
@@ -88,35 +114,37 @@ describe ScreenController do
     before :each do
       @hostname = 'infotv-01'
       @resolution = '800x600'
-      session[:display_authentication] = true
-      session[:hostname] = @hostname
-      session[:organisation] = @organisation
+      @verifier = "XYZ"
+      request.env['X-Iivari-Auth'] = "#{@hostname}:#{@verifier}"
     end
 
-    it "should be unauthorized" do
-      session[:display_authentication] = false
+    it "should unauthorize without display" do
       get :slides, {:hostname => @hostname, :resolution => @resolution, :format => :json}
       assert_response :unauthorized
     end
 
     it "should render notice with inactive display" do
-      display = create_display :hostname => @hostname, :active => false
+      display = create_display :hostname => @hostname, :active => false, :verifier => @verifier
       get :slides, {:hostname => @hostname, :resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == display
-      response.body.should =~ /display_non_active_body/
+      data = JSON.parse response.body
+      data.length.should == 1
+      data.first["slide_html"].should =~ /Aktivoi näyttö/
     end
 
     it "should render notice with active display without channel" do
-      display = create_display :hostname => @hostname, :active => true
+      display = create_display :hostname => @hostname, :active => true, :verifier => @verifier
       get :slides, {:hostname => @hostname, :resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == display
-      response.body.should =~ /display_non_active_body/
+      data = JSON.parse response.body
+      data.length.should == 1
+      data.first["slide_html"].should =~ /Aktivoi näyttö/
     end
 
     it "should render json" do
-      display = create_display :hostname => @hostname, :active => true
+      display = create_display :hostname => @hostname, :active => true, :verifier => @verifier
       channel = Channel.create(:name => 'test channel 1', :slide_delay => 2)
       display.channel = channel
       display.save
@@ -143,14 +171,13 @@ describe ScreenController do
   end
 
 
-  context "#slides.json with slide data" do
+  context "#ajax actions with slide data" do
     before :each do
       @hostname_1 = 'infotv-01'
       @hostname_2 = 'infotv-02'
       @resolution = '800x600'
-      session[:display_authentication] = true
-      session[:hostname] = @hostname
-      session[:organisation] = @organisation
+      @verifier_1 = "XYZa"
+      @verifier_2 = "XYZb"
 
       @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
       assert @channel_1.reload
@@ -179,14 +206,22 @@ describe ScreenController do
         :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
       
       # enable channel, activate displays
-      @display_1 = create_display(:hostname => @hostname_1, :channel => @channel_1, :active => true)
+      @display_1 = create_display(
+        :hostname => @hostname_1, 
+        :channel => @channel_1, 
+        :active => true, 
+        :verifier => @verifier_1)
       assert @display_1.reload
-      @display_2 = create_display(:hostname => @hostname_2, :channel => @channel_2, :active => true)
+      @display_2 = create_display(
+        :hostname => @hostname_2, 
+        :channel => @channel_2, 
+        :active => true, 
+        :verifier => @verifier_2)
       assert @display_2.reload
     end
 
     it "should render slides html with one channel" do
-      session[:hostname] = @hostname_1
+      request.env['X-Iivari-Auth'] = "#{@hostname_1}:#{@verifier_1}"
       get :slides, {:resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == @display_1
@@ -202,7 +237,7 @@ describe ScreenController do
     end
 
     it "should render slides html with two channels" do
-      session[:hostname] = @hostname_2
+      request.env['X-Iivari-Auth'] = "#{@hostname_2}:#{@verifier_2}"
       get :slides, {:resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == @display_2
@@ -218,52 +253,9 @@ describe ScreenController do
       slides[2]["slide_html"].should =~ /test title 23/
       slides[2]["slide_html"].should =~ /test body 23/
     end
-  end
-
-
-  context "#display_ctrl.json" do
-    before :each do
-      @hostname_1 = 'infotv-01'
-      @hostname_2 = 'infotv-02'
-      @resolution = '800x600'
-      session[:display_authentication] = true
-      session[:organisation] = @organisation
-
-      @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
-      assert @channel_1.reload
-      @channel_2 = Channel.create(:name => 'test channel 2', :slide_delay => 8)
-      assert @channel_2.reload
-
-      @slide_11 = Slide.create(
-        :channel => @channel_1, 
-        :position => 1, 
-        :title => 'test title 11', :body => 'test body 11', :template => 'only_text')
-      @slide_12 = Slide.create(
-        :channel => @channel_1, 
-        :position => 2, 
-        :title => 'test title 12', :body => 'test body 12', :template => 'only_text')
-      @slide_21 = Slide.create(
-        :channel => @channel_2, 
-        :position => 1, 
-        :title => 'test title 21', :body => 'test body 21', :template => 'only_text')
-      @slide_22 = Slide.create(
-        :channel => @channel_2, 
-        :position => 2, 
-        :title => 'test title 22', :body => 'test body 22', :template => 'only_text')
-      @slide_23 = Slide.create(
-        :channel => @channel_2, 
-        :position => 3, 
-        :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
-      
-      # enable channel, activate displays
-      @display_1 = create_display(:hostname => @hostname_1, :channel => @channel_1, :active => true)
-      assert @display_1.reload
-      @display_2 = create_display(:hostname => @hostname_2, :channel => @channel_2, :active => true)
-      assert @display_2.reload
-    end
 
     it "should get display" do
-      session[:hostname] = @hostname_2
+      request.env['X-Iivari-Auth'] = "#{@hostname_2}:#{@verifier_2}"
       get :display_ctrl, {:format => :json}
       assert_response :success
       assigns(:display).should == @display_2
@@ -286,9 +278,10 @@ describe ScreenController do
         'weekdays' => [0,2,4,6]
       }
 
+      # FIXME: timers are loaded from config file, these have no effect!
       @organisation.control_timers = [poweroff_timer, refresh_timer]
 
-      session[:hostname] = @hostname_1
+      request.env['X-Iivari-Auth'] = "#{@hostname_1}:#{@verifier_1}"
       get :display_ctrl, {:resolution => @resolution, :format => :json}
       assert_response :success
       assigns(:display).should == @display_1
@@ -300,6 +293,7 @@ describe ScreenController do
 
       poweroff_timers = ctrl["timers"].collect{ |day|
         day.select{|t| t["type"] == "poweroff"} }.flatten.compact
+      # poweroff timers have weekdays "*", one for each day of the week
       assert_equal 7, poweroff_timers.size
       poweroff_timers.each{|t| assert_equal({
         "type"=>"poweroff",
