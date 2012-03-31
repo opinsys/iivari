@@ -16,7 +16,7 @@ window.Iivari = {
     Views: {},
     init: function() {
         // no routing! only one view!
-        new Iivari.Views.Conductor();
+        (new Iivari.Views.Conductor()).start();
     }
 };
 

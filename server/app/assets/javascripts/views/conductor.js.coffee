@@ -33,6 +33,8 @@ class Iivari.Views.Conductor extends Backbone.View
     #  * window.ctrl_update_interval
     initialize: ->
         super()
+
+    start: ->
         jqs5_init()
         updateSlideData(json_url, cache)
         showNextSlide(!preview)
