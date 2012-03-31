@@ -258,6 +258,7 @@ class ScreenController < ApplicationController
   # Display authentication token is passed in X-Iivari-Auth header.
   # The token contains <hostname>:<verifier>
   def displayauth_verify
+    return true if preview?
     begin
       token = request.headers["X-Iivari-Auth"]
       unless token
