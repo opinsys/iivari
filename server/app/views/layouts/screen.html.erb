@@ -12,6 +12,15 @@
 </head>
 <body>
 
+  <%# superslides - rendered by transparency %>
+  <div id="slideshow">
+    <ul class="slides-container">
+      <li>
+        <div class="slide"></div>
+      </li>
+    </ul>
+  </div>
+
   <%= yield %>
 
   <div class="footer_container <%= @theme -%>">

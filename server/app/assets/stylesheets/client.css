@@ -7,6 +7,33 @@ html, body, .footer{
     font-family: sans-serif;
 }
 
+/* slideshow */
+#slideshow {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+#slideshow .slides-navigation {
+    width: 988px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
+    top: -50%;
+}
+#slideshow img {
+    max-width: none;
+    -ms-interpolation-mode: bicubic;
+    -webkit-backface-visibility: hidden;
+}
+/* prevent ugly top margin */
+.slides-control {
+    overflow: auto;
+}
+.slides-container {
+    list-style-type: none;
+}
+
+/* slide content */
 .slide {
     margin: 0;
     padding: 0;
@@ -14,76 +41,55 @@ html, body, .footer{
     height: 100%;
     color: #000;
 }
-
 .slide .title {
     display: block;
     position: relative;
     margin: 0;
     padding: 0.1em 0em 0em 0.5em;
 }
-
 .title_container {
-    position: relative;
+    overflow: auto;
     z-index: 100;
 }
-
-.title_container img {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: auto;
-}
-
 .slide .content {
     z-index: 0;
+    overflow: visible;
 }
-
-.slide > * {
-}
-
 .content .lefthalf {
-    position: fixed;
-    top: 3.2em;
-    left: 0.4em;
-    margin: 0;
-    padding: 0;
-    width: 48%;
-    height: 75%;
+    float: left;
+    border: 0px solid blue;
+    max-width: 48%;
+    overflow: visible;
+    padding: 1em 0 0 1em;
 }
-
 .content .righthalf {
-    position: fixed;
-    top: 3.2em;
-    left: 50.5%;
-    margin: 0;
-    width: 48%;
-    height: 75%;
+    float: right;
+    border: 0px solid green;
+    max-width: 48%;
+    overflow: visible;
+    padding: 1em 1em 0 0;
 }
-
-
-.content img {
-    position:absolute;
-    top:0;
-    bottom:0;
-    left: 0;
-    right: 0;
-    margin:auto;
-}
-
-
 .content .full {
-    position: fixed;
-    top: 3.4em;
-    left: 0.4em;
-    width: 98%;
-    height: 75%;
+    padding: 1em 2em;
 }
-
-a {
+/* Some image styles are set dynamically in javascript */
+.content img {
+    padding: 0;
+}
+.content .lefthalf img, .content .righthalf img {
+    width: auto;
+    height: auto;
+}
+.content a {
     text-decoration: none;
     color: #00a;
 }
-
+.fullimg {
+  text-align: center;
+}
+.fullimg img {
+  margin: 0 auto;
+}
 
 /* header and footer gradients */
 .footer_container {
