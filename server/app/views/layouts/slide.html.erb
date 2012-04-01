@@ -10,7 +10,11 @@ locals: theme
 <% else %>
 
 <div class="title_container <%= theme -%>">
-  <h1 class="title"><%= @slide.title %></h1>
+  <% if (@slide.template == "only_image" and @slide.title.empty? rescue true) -%>
+    <%# no title bar with fullscreen images with no title -%>
+  <% else -%>
+    <h1 class="title"><%= @slide.title %></h1>
+  <% end -%>
 </div>
 
 <div class="content">
