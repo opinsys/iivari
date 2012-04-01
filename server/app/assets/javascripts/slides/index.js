@@ -22,10 +22,10 @@ $(document).ready(function(){
         }
     });
 
-    $(".slide_item").mouseover(function() {
-	$(this).find('.action').toggle();
+    $(".slide_item").mouseenter(function() {
+        $(this).find('.action').fadeIn(300);
     });
-    $(".slide_item").mouseout(function() {
-	$(this).find('.action').toggle();
+    $(".slide_item").mouseleave(function() {
+        $(this).find('.action').fadeOut(300);
     });
 });
