@@ -117,6 +117,10 @@ class ScreenController < ApplicationController
 
     @manifest_url = manifest_screen_path(:resolution => params[:resolution])
 
+    # Footer theme - default "gold"
+    @theme = @channel.theme if @channel
+    @theme ||= "gold"
+
     respond_to do |format|
       format.html
     end

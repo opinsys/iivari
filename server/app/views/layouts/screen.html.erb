@@ -11,6 +11,15 @@
   <%= javascript_tag do %>
 	<%= yield(:slideshow) %>
   <% end %>
+
+  <div class="footer_container <%= @theme -%>">
+    <div id="thetime"></div>
+    &nbsp;
+    <div id="network-offline" style="display: none;">
+      <%= t('.offline') %>
+    </div>
+  </div>
+
   <%= javascript_include_tag "client" %>
 
 </body>

@@ -65,39 +65,11 @@ function showNextSlide(repeat) {
 	setTimeout(showNextSlide, 5000, repeat);
     } else { 
 	
-	var today=new Date();
-
-	var d=today.getDate();
-	var mo=today.getMonth()+1;
-	var y=today.getYear() + 1900;
-	var h=today.getHours();
-	var m=today.getMinutes();
-	var s=today.getSeconds();
-
-	h=checkTime(h);
-	m=checkTime(m);
-	s=checkTime(s);
-
-	var newtime = d+"."+mo+"."+y+"  "+h+":"+m;
-
 	oldslide = $('.slide');
 
 	var newslide = document.createElement('div');
 	$(newslide).addClass('slide');
 	$(newslide).append(slideData.json[slideNumber]["slide_html"]);
-	$(newslide).find('.footer_container').append("<h3 class=\"footer\">" + newtime + "</h3>");
-
-    /*
-    Check network status and display a notice if offline.
-    The DisplayCtrl object sets an interval to execute an
-    Ajax call to the server, and upon its failure,
-    Iivari.onLine is set to false.
-    */
-    if (Iivari.onLine === false) {
-      $(newslide).find('#network-offline')
-        .css({visibility: "visible"});
-    }
-
 	$(newslide).appendTo('body');
 
 	$(oldslide).hide();

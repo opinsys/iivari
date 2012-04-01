@@ -187,7 +187,7 @@ fi:
       logged_in_as: Kirjauduttu sisään käyttäjänä
       tools: Työkalut
       schools: Koulut
-    slide:
+    screen:
       offline: verkkoyhteysvirhe
   notices:
     login_required: Sinun täytyy kirjautua päästäksesi tälle sivulle

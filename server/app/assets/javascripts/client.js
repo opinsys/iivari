@@ -1,6 +1,10 @@
 //= require jquery
 //= require jquery.offline
 //= require jqs5.opinsys
+
+//= require moment
+//= require moment-fi
+
 //= require underscore
 //= require backbone
 //= require slideshow

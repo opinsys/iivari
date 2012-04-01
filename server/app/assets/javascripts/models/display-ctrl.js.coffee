@@ -36,13 +36,16 @@ class Iivari.Models.DisplayCtrl
         @ctrlData = new Object()
         @getCtrlData() # load control data from server
 
+        # use finnish moment.js translation
+        moment.lang('fi')
+
         # times [msec]
-        @network_check_interval = 30000
+        @footer_update_interval = 60000
         @execute_interval = 60000
 
-        if @network_check_interval
+        if @footer_update_interval
             # network online/offline check
-            setInterval @checkConnectivity, @network_check_interval
+            setInterval updateFooter, @footer_update_interval
         if @update_interval
             # load new json data
             setInterval @getCtrlData, @update_interval
@@ -50,35 +53,12 @@ class Iivari.Models.DisplayCtrl
             # execute timers
             setInterval @executeCtrlData, @execute_interval
 
-        console.log "Info: DisplayCtrl action intervals: /ping: #{@network_check_interval/1000} sec ; #{@json_url}: #{@update_interval/1000} sec ; timer: #{@execute_interval/1000} sec"
+        updateFooter()
 
-    # check network online/offline status by requesting
-    # HTTP HEAD from the server
-    checkConnectivity: () =>
-        $.ajax
-            type: "HEAD",
-            url: "/ping",
-            cache: false,
-            timeout: 3000,
-            success: (data, textStatus, jqXHR) -> Iivari.onLine = true
-
-            error: (jqXHR, textStatus, errorThrown) ->
-                # response status other than 0 indicate that the server is responding
-                # NOTE: server error 500 appears as 0
-                try
-                    console.log jqXHR.status
-                catch e
-                    # possibly INVALID_STATE_ERR: Dom Exception 11:
-                    # An attempt to use an object no longer available,
-                    # happens when network is disconnected.
-                    Iivari.onLine = false
-                    return
-
-                if jqXHR.status == 0
-                    console.log "Warning: server unreachable: #{textStatus}"
-                    Iivari.onLine = false
-                else
-                    console.log "Warning: server ping: #{jqXHR.status}: #{jqXHR.statusText}"
+        console.log "Info: initialising DisplayCtrl: #{window.navigator.userAgent}\n"+"
+            /ping interval: #{@footer_update_interval/1000} sec\n"+"
+            #{@json_url} interval: #{@update_interval/1000} sec\n"+"
+            timer evaluation interval: #{@execute_interval/1000} sec"
 
 
     getCtrlData: () =>
@@ -142,6 +122,52 @@ class Iivari.Models.DisplayCtrl
             window.display.powerOn()
         else
             window.display.powerOff()
+
+
+    updateFooter = () ->
+        # Update timestamp.
+        $('#thetime').text(moment(new Date()).format("dddd, Do MMMM YYYY, HH:mm"))
+        # Update network-offline message.
+        # Event-based offline detection would be possible using
+        # document.navigator.onLine, but it does not work on Qt4.6 based client.
+        promise = ping()
+        promise.done =>
+            $("#network-offline").hide()
+            Iivari.onLine = true
+        promise.fail ->
+            $("#network-offline").show()
+            Iivari.onLine = false
+
+
+    # Check network status by requesting HTTP HEAD from the server.
+    # Returns deferred promise.
+    ping = () ->
+        deferred = new $.Deferred()
+        $.ajax
+            type: "HEAD",
+            url: "/ping",
+            cache: false,
+            timeout: 3000,
+            success: (data, textStatus, jqXHR) -> deferred.resolve()
+
+            error: (jqXHR, textStatus, errorThrown) ->
+                # response status other than 0 indicate that the server is responding
+                # NOTE: server error 500 appears as 0
+                try
+                    if jqXHR.status == 0
+                        console.log "Warning: server unreachable: #{textStatus}"
+                    else
+                        console.log "Warning: server ping: #{jqXHR.status}: #{jqXHR.statusText}"
+                        # maybe online, but unauthorized?
+                        deferred.resolve()
+                        return
+                catch e
+                    # possibly INVALID_STATE_ERR: Dom Exception 11:
+                    # An attempt to use an object no longer available,
+                    # happens when network is disconnected.
+                deferred.reject()
+
+        return deferred.promise()
 
 
     $(window.applicationCache).bind 'checking', (event) ->

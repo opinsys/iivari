@@ -7,40 +7,6 @@ html, body, .footer{
     font-family: sans-serif;
 }
 
-.footer_container {
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 5;
-    font-size: 0.9em;
-    font-weight: normal;
-}
-.footer {
-    padding: 0.3em 0.9em;
-    font-size: 0.9em;
-    font-weight: normal;
-}
-.footer_container #network-offline {
-    float: right;
-    margin: 0.2em 0.5em;
-    background-image: url('/assets/offline.png');
-    background-size: 1em;
-    background-repeat: no-repeat;
-    background-position: right;
-    padding-right: 2em;
-}
-.footer_container h3 {
-    float: left;
-    margin: 0;
-}
-
-.footer > * {
-    margin: 0;
-    padding: 0;
-    font-size: 0.75em;
-}
-
 .slide {
     margin: 0;
     padding: 0;
@@ -116,6 +82,35 @@ html, body, .footer{
 a {
     text-decoration: none;
     color: #00a;
+}
+
+
+/* header and footer gradients */
+.footer_container {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+.footer_container #thetime {
+    float: left;
+    margin: 0.5em;
+    font-size: 0.9em;
+    font-weight: normal;
+    font-size: 0.75em;
+}
+.footer_container #network-offline {
+    float: right;
+    margin: 0.2em 0.5em;
+    background-image: url('/assets/offline.png');
+    background-size: 1em;
+    background-repeat: no-repeat;
+    background-position: right;
+    padding-right: 2em;
+    font-size: 1em;
 }
 
 .footer_container.gold {
