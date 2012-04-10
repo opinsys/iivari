@@ -3,14 +3,29 @@
 default:
   name: Default organisation
   host: *
+
+  # LDAP
   ldap_host: localhost
   ldap_base: dc=edu,dc=example,dc=com
   uid_search_dn: uid=puavo,o=puavo
   uid_search_password: xxxxxxxx
-  # fi/en
-  locale: fi
   # none/tls
   ldap_method: none
+
+  # Puavo API
+  # The iivari external service has to be added into Puavo with the
+  # following privileges:
+  #  * Services that have only minimal information needed for ldap simple binds (dn, uid)
+  #  * Services that have access to all information needed for getent
+  #  * Client devices
+  #  * Organisation information
+  puavo_api_server: example.com
+  puavo_api_username: service/iivari
+  puavo_api_password: xxxxxxxx
+  puavo_api_ssl: false
+
+  # fi/en
+  locale: fi
   # The number of seconds between update checks (data of slides)
   data_update_interval: 60
 
