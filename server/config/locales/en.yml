@@ -13,15 +13,15 @@ en:
   flash:
     actions:
       create:
-        success: "%{resource_name} was successfully created."
+        notice: "%{resource_name} was successfully created."
       update:
-        success: "%{resource_name} was successfully updated."
+        notice: "%{resource_name} was successfully updated."
       destroy:
-        success: "%{resource_name} was successfully destroyed."
-        error: "%{resource_name} could not be destroyed."
+        notice: "%{resource_name} was successfully destroyed."
+        alert: "%{resource_name} could not be destroyed."
     user_sessions:
       create:
-        success: Login successful!
+        notice: Login successful!
   activerecord:
     attributes:
       channel:

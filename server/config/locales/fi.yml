@@ -10,20 +10,20 @@ fi:
   flash:
     actions:
       create:
-        success: "Uusi %{resource_name} on luotu onnistuneesti."
+        notice: "Uusi %{resource_name} on luotu onnistuneesti."
       update:
-        success: "%{resource_name}tietojen päivitys onnistui."
+        notice: "%{resource_name}tietojen päivitys onnistui."
       destroy:
-        success: "%{resource_name} poistettiin."
-        error: "%{resource_name}n poistaminen epäonnistui."
+        notice: "%{resource_name} poistettiin."
+        alert: "%{resource_name}n poistaminen epäonnistui."
     user_sessions:
       create:
-        success: Kirjautuminen onnistui
+        notice: Kirjautuminen onnistui
     slides:
       create:
-        success: Uuden ruudun lisäys onnistui!
+        notice: Uusi ruutu lisätty
       update:
-        success: Ruuduntietojen päivitys onnistui
+        notice: Ruutu päivitettiin
   activerecord:
     models:
       channel: Kanava
