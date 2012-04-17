@@ -57,6 +57,7 @@
       type: "GET",
       url: url,
       data: data,
+      timeout: 5000,
       success: function(responseData, text) {
         delete requesting[requestingKey];
 
