@@ -155,6 +155,7 @@ class ScreenController < ApplicationController
   def manifest
     body = ["CACHE MANIFEST"]
     body << "CACHE:"
+    # Production mode offline caching
     if Rails.env == "production"
       # Cache client JS and CSS with digest checksum.
       begin
@@ -172,6 +173,16 @@ class ScreenController < ApplicationController
         logger.error $!
         logger.warn "Client is unable to use offline cache!"
       end
+    # Development mode offline caching
+    elsif Iivari::Application.config.assets.debug == false
+      %w{
+        client.js
+        client.css
+      }.each do |asset|
+        body << root_path+"assets/#{asset}"
+      end
+    else
+      logger.info "Offline caching is disabled - enable it in development mode by setting config.assets.debug = false"
     end
 
     # Cache conductor.
