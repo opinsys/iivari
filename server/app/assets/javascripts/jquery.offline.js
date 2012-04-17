@@ -73,7 +73,8 @@
 
         fn(responseData, text);
       },
-      error: function() {
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log("AJAX error: "+errorThrown);
         delete requesting[requestingKey];
       },
       dataType: "json",
