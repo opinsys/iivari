@@ -22,23 +22,45 @@ en:
     user_sessions:
       create:
         notice: Login successful!
+    slides:
+      create:
+        notice: Added new screen
+      update:
+        notice: Screen updated
   activerecord:
+    models:
+      channel: Channel
+      slide: Slide
+      slide_timer: Slide timer
+      display: Display
     attributes:
       channel:
+        name: Name
         slide_delay: Slide delay (seconds)
+        theme: Theme
+      slide:
+        title: Title
+        body: Contents
+      display:
+        hostname: Name
+        active: Active
+        channel: Channel
+        last_seen_at: Latest activity
       slide_timer:
         start_datetime: Start date and time
         end_datetime: End date and time
         start_time: Start showing at
         end_time: Stop showing at
-        weekday_0: Su
-        weekday_1: Mo
-        weekday_2: Tu
-        weekday_3: We
-        weekday_4: Th
-        weekday_5: Fr
-        weekday_6: Sa
+        weekday_0: Sun
+        weekday_1: Mon
+        weekday_2: Tue
+        weekday_3: Wed
+        weekday_4: Thu
+        weekday_5: Fri
+        weekday_6: Sat
     errors:
+      messages:
+        blank: Cannot be blank!
       models:
         channel:
           attributes:
@@ -48,6 +70,10 @@ en:
     submit:
       create: "Create a %{model}"
       update: "Save"
+      slide:
+        create: Create
+      channel:
+        create: Add new channel
       user_session:
         create: Login
   links:
@@ -72,7 +98,7 @@ en:
     management: Management
     slide_timers: Slide timers
     active: Activate slide
-    deactive: Make slide inactive
+    deactive: Deactivate slide
     digital_signage: Digital Signage
     admins: Admins
   channels:
@@ -86,9 +112,11 @@ en:
     edit:
       title: Editing channel
     form:
-      gold: Gold
-      green: Green
-      cyan: Cyan
+      theme: Theme
+  themes:
+    gold: Gold
+    green: Green
+    cyan: Cyan
   slides:
     show:
       confirm: Are you sure?
@@ -113,15 +141,20 @@ en:
     status:
       slide_is_active: Slide is currently active
       slide_is_not_active: Slide is currently inactive and it is not shown in the presentations
+  user_sessions:
+    new:
+      error_title: Login failed
   displays:
     show:
       channel_not_selected: Not selected
+      not_available: N/A
     edit:
       title: Editing display
     new:
       title: New display
     index:
       title: Listing displays
+      not_available: N/A
   slide_timers:
     list:
       empty: not defined
@@ -139,14 +172,14 @@ en:
     error_messages:
       login_blank: can not be blank
       login_not_found: is not valid
-      login_invalid: should use only letters, numbers, spaces, and .-_@ please.
-      consecutive_failed_logins_limit_exceeded: Consecutive failed logins limit exceeded, account is disabled.
-      email_invalid: should look like an email address.
+      # login_invalid: should use only letters, numbers, spaces, and .-_@ please.
+      # consecutive_failed_logins_limit_exceeded: Consecutive failed logins limit exceeded, account is disabled.
+      # email_invalid: should look like an email address.
       password_blank: can not be blank
       password_invalid: is not valid
-      not_active: Your account is not active
-      not_confirmed: Your account is not confirmed
-      not_approved: Your account is not approved
+      # not_active: Your account is not active
+      # not_confirmed: Your account is not confirmed
+      # not_approved: Your account is not approved
       no_authentication_details: You did not provide any details for authentication.
     attributes:
       user_session:
@@ -157,6 +190,8 @@ en:
       logged_in_as: Logged in as
       tools: Tools
       schools: Schools
+    screen:
+      offline: network error
   notices:
     login_required: You must be logged in to access this page
     not_access: You are not allowed to access this action.
