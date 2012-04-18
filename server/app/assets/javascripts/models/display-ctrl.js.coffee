@@ -54,6 +54,10 @@ class Iivari.Models.DisplayCtrl
             setInterval @executeCtrlData, @execute_interval
 
         updateFooter()
+        # evaluate timers (almost) immediately
+        # -- the window.display backend takes a few seconds to start
+        @getCtrlData().then => setTimeout @executeCtrlData, 2000
+
 
         console.log "Info: initialising DisplayCtrl: #{window.navigator.userAgent}\n"+"
             /ping interval: #{@footer_update_interval/1000} sec\n"+"
@@ -62,6 +66,7 @@ class Iivari.Models.DisplayCtrl
 
 
     getCtrlData: () =>
+        deferred = new $.Deferred()
         # console.log "load ctrl data from #{@json_url}"
         $.retrieveJSON @json_url, (json, status, attributes) =>
             if status == "success"
@@ -70,7 +75,8 @@ class Iivari.Models.DisplayCtrl
                 console.log("control data cached at "+attributes.cachedAt);
             if status != "notmodified"
                 @ctrlData.json = json
-
+            deferred.resolve()
+        return deferred.promise()
 
     executeCtrlData: () =>
         unless window.display
