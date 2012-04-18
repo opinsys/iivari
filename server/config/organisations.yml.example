@@ -55,7 +55,7 @@ default:
     -
       # make an exception to the display power off for one day
       type: "poweron"
-      start_date: "2011/08/20"
+      start_date: "2012/08/20"
       end_date: "2012/08/20"
       start_at: "07:00"
       end_at: "22:00"
