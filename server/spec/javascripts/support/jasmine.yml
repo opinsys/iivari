@@ -3,6 +3,7 @@
 # An array of filepaths relative to asset_paths to include.
 src_files:
   - application.js # loads jQuery
+  - client.js
   - jquery.offline.js
   - app/assets/javascripts/*.js.coffee
 
