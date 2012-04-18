@@ -42,6 +42,8 @@ class Iivari.Views.Conductor extends Backbone.View
         cache = Iivari.session.get "cache"
         #  - single slide preview mode? (boolean)
         preview = Iivari.session.get "preview"
+        #  - footer timestamp locale
+        locale = Iivari.session.get "locale"
 
 
         jqs5_init()
@@ -50,5 +52,5 @@ class Iivari.Views.Conductor extends Backbone.View
         unless preview
             setInterval((() -> updateSlideData(json_url, cache)), data_update_interval)
             # DisplayCtrl runs control timers and handles kiosk backend signaling.
-            Iivari.displayCtrl = new Iivari.Models.DisplayCtrl(ctrl_url, ctrl_update_interval)
+            Iivari.displayCtrl = new Iivari.Models.DisplayCtrl(ctrl_url, ctrl_update_interval, locale)
 

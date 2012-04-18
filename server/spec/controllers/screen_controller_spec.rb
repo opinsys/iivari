@@ -94,6 +94,7 @@ describe ScreenController do
       _session["ctrl_update_interval"].should_not be_nil
       _session["cache"].should == true
       _session["preview"].should == false
+      _session["locale"].should =~ /../
       response.should render_template("conductor")
       display.reload
       display.last_seen_at.should be_within(1).of(Time.now)

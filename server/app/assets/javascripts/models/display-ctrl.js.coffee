@@ -32,12 +32,13 @@ class Iivari.Models.DisplayCtrl
     #    is probably best kept in several minutes, if not hours,
     #    and execute interval should be ~minute
     #
-    constructor: (@json_url, @update_interval) ->
+    constructor: (@json_url, @update_interval, locale) ->
         @ctrlData = new Object()
         @getCtrlData() # load control data from server
 
-        # use finnish moment.js translation
-        moment.lang('fi')
+        # footer timestamp locale
+        locale ?= "en"
+        moment.lang(locale)
 
         # times [msec]
         @footer_update_interval = 60000

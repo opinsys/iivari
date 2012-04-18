@@ -115,6 +115,9 @@ class ScreenController < ApplicationController
     ctrl_update_interval =
       ( Organisation.current.value_by_key('control_update_interval') || 60 * 60 * 24 ) * 1000
 
+    # Locale for screen footer timestamp
+    locale = Organisation.current.value_by_key('locale')
+
     # Backbone session - published to client javascript
     @session_json = {
       :json_url => json_url,
@@ -123,6 +126,7 @@ class ScreenController < ApplicationController
       :ctrl_update_interval => ctrl_update_interval,
       :cache => @cache,
       :preview => preview,
+      :locale => locale
     }.to_json
 
     @manifest_url = manifest_screen_path(:resolution => params[:resolution])
