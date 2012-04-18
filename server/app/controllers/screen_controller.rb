@@ -47,7 +47,7 @@ class ScreenController < ApplicationController
   def display_ctrl
     unless @display
       logger.warn "No display"
-      render :nothing => true, :status => 404
+      render :nothing => true, :status => 400
       return
     end
     
