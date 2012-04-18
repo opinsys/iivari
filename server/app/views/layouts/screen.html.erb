@@ -5,12 +5,14 @@
   <title>Iivari</title>
   <%= csrf_meta_tag %>
   <%= stylesheet_link_tag "client" %>
+  <%= javascript_include_tag "client" %>
+  <%= javascript_tag do %>
+    Iivari.session = new Iivari.Models.Session(<%= @session_json.html_safe -%>);
+  <% end %>
 </head>
 <body>
 
-  <%= javascript_tag do %>
-	<%= yield(:slideshow) %>
-  <% end %>
+  <%= yield %>
 
   <div class="footer_container <%= @theme -%>">
     <div id="thetime"></div>
@@ -19,8 +21,6 @@
       <%= t('.offline') %>
     </div>
   </div>
-
-  <%= javascript_include_tag "client" %>
 
 </body>
 </html>

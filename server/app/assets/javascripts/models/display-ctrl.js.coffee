@@ -60,8 +60,8 @@ class Iivari.Models.DisplayCtrl
 
 
         console.log "Info: initialising DisplayCtrl: #{window.navigator.userAgent}\n"+"
-            /ping interval: #{@footer_update_interval/1000} sec\n"+"
-            #{@json_url} interval: #{@update_interval/1000} sec\n"+"
+            ping interval: #{@footer_update_interval/1000} sec\n"+"
+            ctrl data update interval: #{@update_interval/1000} sec\n"+"
             timer evaluation interval: #{@execute_interval/1000} sec"
 
 

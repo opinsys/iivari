@@ -53,7 +53,10 @@ describe ScreenController do
       display.hostname.should == @hostname
       display.organisation.should == @organisation.key
       display.active.should_not be_true
-      assigns(:json_url).should == 'slides.json?resolution=800x600'
+      assigns(:cache).should == true
+      assigns(:manifest_url).should == '/screen.manifest?resolution=800x600'
+      assigns(:theme).should == 'gold'
+      assigns(:session_json).should_not be_nil
       response.should render_template("conductor")
       display.reload
       display.last_seen_at.should be_within(1).of(Time.now)
@@ -64,20 +67,33 @@ describe ScreenController do
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
       assigns(:display).should == display
-      assigns(:json_url).should == 'slides.json?resolution=800x600' 
+      assigns(:cache).should == true
+      assigns(:manifest_url).should == '/screen.manifest?resolution=800x600'
+      assigns(:theme).should == 'gold'
+      assigns(:session_json).should_not be_nil
       response.should render_template("conductor")
     end
 
     it "should render with active display and channel" do
       display = create_display :hostname => @hostname, :active => true
-      channel = Channel.create(:name => 'test channel 1', :slide_delay => 2)
+      channel = Channel.create(:name => 'test channel 1', :slide_delay => 2, :theme => "green")
       display.channel = channel
       display.save
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
       assigns(:display).should == display
       assigns(:channel).should == channel
-      assigns(:json_url).should == 'slides.json?resolution=800x600' 
+      assigns(:cache).should == true
+      assigns(:manifest_url).should == '/screen.manifest?resolution=800x600'
+      assigns(:theme).should == 'green'
+      assigns(:session_json).should_not be_nil
+      _session = JSON.parse assigns(:session_json)
+      _session["json_url"].should =~ /slides.json\?resolution=800x600/
+      _session["ctrl_url"].should =~ /display_ctrl.json/
+      _session["data_update_interval"].should_not be_nil
+      _session["ctrl_update_interval"].should_not be_nil
+      _session["cache"].should == true
+      _session["preview"].should == false
       response.should render_template("conductor")
       display.reload
       display.last_seen_at.should be_within(1).of(Time.now)

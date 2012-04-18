@@ -86,7 +86,7 @@ class ScreenController < ApplicationController
     url_params = []
 
     # preview mode is activated when slide_id is given
-    @preview = params[:slide_id] ? true : false
+    preview = params[:slide_id] ? true : false
     if params[:slide_id]
       url_params.push "slide_id=#{params[:slide_id]}"
     end
@@ -100,20 +100,30 @@ class ScreenController < ApplicationController
       url_params.push "channel_id=#{params[:channel_id]}"
     end
 
-    @json_url = "slides.json"
+    json_url = conductor_slides_url
     unless url_params.empty?
-      @json_url += "?" + url_params.join("&")
+      json_url += "?" + url_params.join("&")
     end
     
     # Get data_update_interval from organisations.yml config file.
     # Config sets it in seconds, JavaScript needs it in msec.
     # Default is 24 hours.
-    @data_update_interval =
+    data_update_interval =
       ( Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000
     
     # The interval to fetch the display control JSON data
-    @ctrl_update_interval =
+    ctrl_update_interval =
       ( Organisation.current.value_by_key('control_update_interval') || 60 * 60 * 24 ) * 1000
+
+    # Backbone session - published to client javascript
+    @session_json = {
+      :json_url => json_url,
+      :ctrl_url => conductor_display_ctrl_url,
+      :data_update_interval => data_update_interval,
+      :ctrl_update_interval => ctrl_update_interval,
+      :cache => @cache,
+      :preview => preview,
+    }.to_json
 
     @manifest_url = manifest_screen_path(:resolution => params[:resolution])
 
