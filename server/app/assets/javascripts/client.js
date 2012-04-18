@@ -4,6 +4,7 @@
 
 //= require moment
 //= require moment-fi
+//= require moment-sv
 
 //= require underscore
 //= require backbone
