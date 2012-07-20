@@ -71,6 +71,9 @@ function showNextSlide(repeat) {
 	$(newslide).find('.footer_container').append("<h3 class=\"footer\">" + newtime + "</h3>");
 	$(newslide).appendTo('body');
 
+	// fit iframe height to visible screen
+	iframeResize();
+
 	$(oldslide).hide();
 	$(newslide).show();
 	$(oldslide).remove();
@@ -133,3 +136,18 @@ function checkSlideTimerAndStatus(slide) {
     }
     return false;
 }
+
+
+/* Fix iframe height when screen is rotated with xrandr */
+function iframeResize() {
+    var _iframe = $("iframe");
+    if (_iframe) {
+        var new_height = $(window).height() - $(".footer_container").height();
+        $(_iframe).height(new_height);
+    }
+}
+
+/* Resize iframe on window resize event */
+$(window).resize(function() {
+    iframeResize();
+});
