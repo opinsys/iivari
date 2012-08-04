@@ -47,7 +47,9 @@ end
 group :test do
   gem 'sinatra'
   gem 'capybara'
-  gem 'rspec-rails', '>= 2.8.1'
+  # rspec syntax has changed, lock down to this version
+  gem 'rspec', '2.8.0'
+  gem 'rspec-rails', '2.8.1'
   gem 'cucumber'
   gem 'cucumber-rails'
   gem 'factory_girl_rails'

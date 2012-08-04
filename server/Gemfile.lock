@@ -262,7 +262,8 @@ DEPENDENCIES
   rails-backbone
   responders
   rmagick
-  rspec-rails (>= 2.8.1)
+  rspec (= 2.8.0)
+  rspec-rails (= 2.8.1)
   ruby-debug
   ruby-ldap
   sass-rails (> 3.1)
