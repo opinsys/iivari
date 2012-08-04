@@ -144,7 +144,7 @@ describe 'refresh-timer', ->
     expect(TimerTestHelpers::isTimerActiveAt(timer_data, at)).toEqual false
 
   it 'should be active at', ->
-    at = new Date(2011,6,2,12,00)
+    at = new Date(2011,6,2,12,0)
     expect(TimerTestHelpers::isTimerActiveAt(timer_data, at)).toEqual true
 
   it 'should be active at t+10 min', ->
