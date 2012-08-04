@@ -20,6 +20,13 @@ end
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+# Sinatra patches ActiveRecord classes with the method "template"
+# and this clashes with Slide#template.
+# Undefine this method, as Sinatra is used only with Cucumber.
+module Sinatra::Delegator
+  remove_method :template
+end
+
 RSpec.configure do |config|
   # ## Mock Framework
   #
