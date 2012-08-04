@@ -55,6 +55,7 @@ Iivari::Application.configure do
     smoothness/*.css
     slides/*.js
     slides/*.css
+    displays/*.js
     jquery-simple-drop-down-menu-plugin.js
     datetimepicker/*
     tinymce-jquery.js

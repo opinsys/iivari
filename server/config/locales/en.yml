@@ -44,7 +44,7 @@ en:
       display:
         hostname: Name
         active: Active
-        channel: Channel
+        channels: Channels
         last_seen_at: Latest activity
       slide_timer:
         start_datetime: Start date and time
@@ -150,6 +150,9 @@ en:
       not_available: N/A
     edit:
       title: Editing display
+      channels: "Edit channels, you can choose the order by drag and drop"
+      add_channel: Add new channel
+      no_channel: -- no channel --
     new:
       title: New display
     index:

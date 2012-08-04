@@ -6,8 +6,8 @@
 </p>
 
 <p>
-  <b><%= Display.human_attribute_name :channel %>:</b>
-  <%= @display.channel.nil? ? t(".channel_not_selected") : @display.channel.name %>
+  <b><%= Display.human_attribute_name :channels %>:</b>
+  <%= !@display.channels.any? ? t(".channel_not_selected") : @display.channels.collect(&:name).join(', ') %>
 </p>
 
 <p>

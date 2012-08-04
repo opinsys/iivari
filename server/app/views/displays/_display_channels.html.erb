@@ -1,0 +1,16 @@
+<%= t('displays.edit.channels') -%>
+
+<div id="display-channels">
+  <ul id="sortable">
+    <%= channel_select(@display).html_safe %>
+  </ul>
+  <ul>
+    <!-- add new item (no JS) -->
+    <%= channel_select().html_safe %>
+
+    <!-- add new item (JS only) -->
+    <li id="new-channel" style="display: none">
+      <%= t('displays.edit.add_channel') %>
+    </li>
+  </ul>
+</div>

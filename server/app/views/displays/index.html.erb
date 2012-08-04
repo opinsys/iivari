@@ -4,7 +4,7 @@
   <tr>
     <th><%= Display.human_attribute_name :hostname %></th>
     <th><%= Display.human_attribute_name :active %></th>
-    <th><%= Display.human_attribute_name :channel %></th>
+    <th><%= Display.human_attribute_name :channels %></th>
     <th><%= Display.human_attribute_name :last_seen_at %></th>
     <th></th>
     <th></th>
@@ -14,7 +14,7 @@
   <tr>
     <td><%= link_to display.hostname, display_path(@school.puavo_id, display) %></td>
     <td><%= display.active ? "X" : "" %></td>
-    <td><%= display.channel.name rescue "" %></td>
+    <td><%= display.channels.collect(&:name).join(', ') rescue "" %></td>
     <td><%= display.last_seen_at || t(".not_available") %></td>
     <td><%= link_to t('links.edit'), edit_display_path(@school.puavo_id, display) %></td>
     <td><%= link_to t('links.destroy'), display_path(@school.puavo_id, display), :confirm => t('confirm'), :method => :delete %></td>

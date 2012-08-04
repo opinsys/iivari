@@ -47,7 +47,7 @@ describe ScreenController do
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
       Display.count.should == 1
-      
+
       display = assigns(:display)
       display.should == Display.find_by_hostname(@hostname)
       display.hostname.should == @hostname
@@ -76,13 +76,16 @@ describe ScreenController do
 
     it "should render with active display and channel" do
       display = create_display :hostname => @hostname, :active => true
-      channel = Channel.create(:name => 'test channel 1', :slide_delay => 2, :theme => "green")
-      display.channel = channel
-      display.save
+      channel = nil
+      without_access_control do
+        channel = Channel.create(:name => 'test channel 1', :slide_delay => 2, :theme => "green")
+        display.channels << channel
+        display.save
+      end
       get :conductor, {:hostname => @hostname, :resolution => @resolution}
       response.should be_success
       assigns(:display).should == display
-      assigns(:channel).should == channel
+      assigns(:channels).should == [channel]
       assigns(:cache).should == true
       assigns(:manifest_url).should == '/screen.manifest?resolution=800x600'
       assigns(:theme).should == 'green'
@@ -134,21 +137,24 @@ describe ScreenController do
 
     it "should render json" do
       display = create_display :hostname => @hostname, :active => true
-      channel = Channel.create(:name => 'test channel 1', :slide_delay => 2)
-      display.channel = channel
-      display.save
-      slide = Slide.create(
-        :channel => channel, 
-        :position => 1, 
-        :title => 'test title 1', 
-        :body => 'test body', 
-        :template => 'only_text')
-      assert slide.reload
+      channel = nil
+      without_access_control do
+        channel = Channel.create(:name => 'test channel 1', :slide_delay => 2)
+        display.channels << channel
+        display.save
+        slide = Slide.create(
+          :channel => channel,
+          :position => 1,
+          :title => 'test title 1',
+          :body => 'test body',
+          :template => 'only_text')
+        assert slide.reload
+      end
 
       get :slides, {:hostname => @hostname, :resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == display
-      assigns(:channel).should == channel
+      assigns(:channels).should == [channel]
 
       slides = JSON.parse response.body
       assert_equal 1, slides.size
@@ -169,37 +175,39 @@ describe ScreenController do
       session[:hostname] = @hostname
       session[:organisation] = @organisation
 
-      @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
-      assert @channel_1.reload
-      @channel_2 = Channel.create(:name => 'test channel 2', :slide_delay => 8)
-      assert @channel_2.reload
+      without_access_control do
+        @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
+        assert @channel_1.reload
+        @channel_2 = Channel.create(:name => 'test channel 2', :slide_delay => 8)
+        assert @channel_2.reload
 
-      @slide_11 = Slide.create(
-        :channel => @channel_1, 
-        :position => 1, 
-        :title => 'test title 11', :body => 'test body 11', :template => 'only_text')
-      @slide_12 = Slide.create(
-        :channel => @channel_1, 
-        :position => 2, 
-        :title => 'test title 12', :body => 'test body 12', :template => 'only_text')
-      @slide_21 = Slide.create(
-        :channel => @channel_2, 
-        :position => 1, 
-        :title => 'test title 21', :body => 'test body 21', :template => 'only_text')
-      @slide_22 = Slide.create(
-        :channel => @channel_2, 
-        :position => 2, 
-        :title => 'test title 22', :body => 'test body 22', :template => 'only_text')
-      @slide_23 = Slide.create(
-        :channel => @channel_2, 
-        :position => 3, 
-        :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
-      
-      # enable channel, activate displays
-      @display_1 = create_display(:hostname => @hostname_1, :channel => @channel_1, :active => true)
-      assert @display_1.reload
-      @display_2 = create_display(:hostname => @hostname_2, :channel => @channel_2, :active => true)
-      assert @display_2.reload
+        @slide_11 = Slide.create(
+          :channel => @channel_1,
+          :position => 1,
+          :title => 'test title 11', :body => 'test body 11', :template => 'only_text')
+        @slide_12 = Slide.create(
+          :channel => @channel_1,
+          :position => 2,
+          :title => 'test title 12', :body => 'test body 12', :template => 'only_text')
+        @slide_21 = Slide.create(
+          :channel => @channel_2,
+          :position => 1,
+          :title => 'test title 21', :body => 'test body 21', :template => 'only_text')
+        @slide_22 = Slide.create(
+          :channel => @channel_2,
+          :position => 2,
+          :title => 'test title 22', :body => 'test body 22', :template => 'only_text')
+        @slide_23 = Slide.create(
+          :channel => @channel_2,
+          :position => 3,
+          :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
+
+        # enable channel, activate displays
+        @display_1 = create_display(:hostname => @hostname_1, :channels => [@channel_1], :active => true)
+        assert @display_1.reload
+        @display_2 = create_display(:hostname => @hostname_2, :channels => [@channel_2], :active => true)
+        assert @display_2.reload
+      end
     end
 
     it "should render slides html with one channel" do
@@ -207,7 +215,7 @@ describe ScreenController do
       get :slides, {:resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == @display_1
-      assigns(:channel).should == @channel_1
+      assigns(:channels).should == [@channel_1]
       slides = JSON.parse response.body
       slides.size.should == 2
       slides[0]["status"].should be_true
@@ -220,66 +228,34 @@ describe ScreenController do
 
     it "should render slides html with two channels" do
       session[:hostname] = @hostname_2
+      @display_2.channels = [@channel_2, @channel_1]
       get :slides, {:resolution => @resolution, :format => :json}
       response.should be_success
       assigns(:display).should == @display_2
-      assigns(:channel).should == @channel_2
+      assigns(:channels).should == [@channel_2, @channel_1]
       slides = JSON.parse response.body
-      slides.size.should == 3
+      slides.size.should == 5
       slides[0]["status"].should be_true
+      # channel 2 slides
       slides[0]["slide_delay"].should == 8
       slides[0]["slide_html"].should =~ /test title 21/
       slides[0]["slide_html"].should =~ /test body 21/
+      slides[1]["slide_delay"].should == 8
       slides[1]["slide_html"].should =~ /test title 22/
       slides[1]["slide_html"].should =~ /test body 22/
+      slides[2]["slide_delay"].should == 8
       slides[2]["slide_html"].should =~ /test title 23/
       slides[2]["slide_html"].should =~ /test body 23/
-    end
-  end
-
-
-  context "#display_ctrl.json" do
-    before :each do
-      @hostname_1 = 'infotv-01'
-      @hostname_2 = 'infotv-02'
-      @resolution = '800x600'
-      session[:display_authentication] = true
-      session[:organisation] = @organisation
-
-      @channel_1 = Channel.create(:name => 'test channel 1', :slide_delay => 2)
-      assert @channel_1.reload
-      @channel_2 = Channel.create(:name => 'test channel 2', :slide_delay => 8)
-      assert @channel_2.reload
-
-      @slide_11 = Slide.create(
-        :channel => @channel_1, 
-        :position => 1, 
-        :title => 'test title 11', :body => 'test body 11', :template => 'only_text')
-      @slide_12 = Slide.create(
-        :channel => @channel_1, 
-        :position => 2, 
-        :title => 'test title 12', :body => 'test body 12', :template => 'only_text')
-      @slide_21 = Slide.create(
-        :channel => @channel_2, 
-        :position => 1, 
-        :title => 'test title 21', :body => 'test body 21', :template => 'only_text')
-      @slide_22 = Slide.create(
-        :channel => @channel_2, 
-        :position => 2, 
-        :title => 'test title 22', :body => 'test body 22', :template => 'only_text')
-      @slide_23 = Slide.create(
-        :channel => @channel_2, 
-        :position => 3, 
-        :title => 'test title 23', :body => 'test body 23', :template => 'only_text')
-      
-      # enable channel, activate displays
-      @display_1 = create_display(:hostname => @hostname_1, :channel => @channel_1, :active => true)
-      assert @display_1.reload
-      @display_2 = create_display(:hostname => @hostname_2, :channel => @channel_2, :active => true)
-      assert @display_2.reload
+      # channel 1 slides
+      slides[3]["slide_delay"].should == 2
+      slides[3]["slide_html"].should =~ /test title 11/
+      slides[3]["slide_html"].should =~ /test body 11/
+      slides[4]["slide_delay"].should == 2
+      slides[4]["slide_html"].should =~ /test title 12/
+      slides[4]["slide_html"].should =~ /test body 12/
     end
 
-    it "should get display" do
+    it "should get display_ctrl" do
       session[:hostname] = @hostname_2
       get :display_ctrl, {:format => :json}
       assert_response :success

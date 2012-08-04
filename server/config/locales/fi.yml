@@ -41,7 +41,7 @@ fi:
       display:
         hostname: Nimi
         active: Aktiivinen
-        channel: Kanava
+        channels: Kanavat
         last_seen_at: Viimeksi aktiivinen
       slide_timer:
         start_datetime: Alkupäivä ja -aika
@@ -147,8 +147,11 @@ fi:
       not_available: Ei tietoa
     edit:
       title: Näytön tietojen muokkaus
+      channels: Muokkaa kanavalistaa, voit vaihtaa kanavien paikkaa kanavanäyttöä raahaamalla
+      add_channel: Lisää uusi kanava
+      no_channel: -- ei kanavaa --
     new:
-      title: Uus näyttö
+      title: Uusi näyttö
     index:
       title: Lista näytöistä
       not_available: Ei tietoa

@@ -5,15 +5,15 @@ class ScreenController < ApplicationController
   before_filter :auth_require, :except => :displayauth
   before_filter :log_last_seen_at, :except => :image
   after_filter :persist_session
-  
+
   # GET /slides.json?resolution=800x600
   def slides
-    if (@display && @display.active && @channel) || preview?
+    if (@display && @display.active && @channels && @channels.any?) || preview?
       if params[:slide_id]
         # FIXME, slid_id security check?!
         @slides = Array(Slide.find(params[:slide_id]))
       else
-        @slides = @channel.slides
+        @slides = @channels.collect(&:slides).flatten
       end
     else
       @slides = Array.new
@@ -28,13 +28,13 @@ class ScreenController < ApplicationController
     end
 
     respond_with(@slides) do |format|
-      format.json do 
+      format.json do
         render :json => @slides.to_json( :only => [:id, :status],
                                          :methods => [:slide_html, :timers, :slide_delay])
       end
     end
   end
-  
+
   # JSON display control data.
   #
   # Sets poweroff and refresh timers. The timers are ordered in an array by weekday.
@@ -50,7 +50,7 @@ class ScreenController < ApplicationController
       render :nothing => true, :status => 400
       return
     end
-    
+
     # Order timers_json by weekday.
     # This makes the result array a bit bigger to store in memory, but easier
     # for the JavaScript to parse on the client.
@@ -104,13 +104,13 @@ class ScreenController < ApplicationController
     unless url_params.empty?
       json_url += "?" + url_params.join("&")
     end
-    
+
     # Get data_update_interval from organisations.yml config file.
     # Config sets it in seconds, JavaScript needs it in msec.
     # Default is 24 hours.
     data_update_interval =
       ( Organisation.current.value_by_key('data_update_interval') || 60 * 60 * 24 ) * 1000
-    
+
     # The interval to fetch the display control JSON data
     ctrl_update_interval =
       ( Organisation.current.value_by_key('control_update_interval') || 60 * 60 * 24 ) * 1000
@@ -131,9 +131,11 @@ class ScreenController < ApplicationController
 
     @manifest_url = manifest_screen_path(:resolution => params[:resolution])
 
-    # Footer theme - default "gold"
-    @theme = @channel.theme if @channel
-    @theme ||= "gold"
+    # Footer theme is set by first channel, defaults to "gold".
+    # TODO: Insert theme to slide json data,
+    #       change it dynamically on the client
+    @theme = (@channels and @channels.any?) ?
+      @channels.first.theme : "gold"
 
     respond_to do |format|
       format.html
@@ -147,7 +149,7 @@ class ScreenController < ApplicationController
   # once it has cached all assets onto its local hard drive.
   #
   # Clients get the manifest url when they request conductor.
-  # Without a session cookie, the conductor response will be 
+  # Without a session cookie, the conductor response will be
   # redirect 302, and iivari-client does not cache the page.
   # Therefore the conductor path is explicitly added to the manifest.
   # The order of parameters has to match exactly the same
@@ -205,9 +207,11 @@ class ScreenController < ApplicationController
     # Cache offline icon.
     body << root_path+"assets/offline.png"
 
-    # Cache slide images.
-    Slide.image_urls(@channel, params[:resolution]).each do |url|
-      body << root_path + url
+    # Cache slide images from all channels
+    @channels.each do |channel|
+      Slide.image_urls(channel, params[:resolution]).each do |url|
+        body << root_path + url
+      end
     end
 
     # Use network for any other request.
@@ -255,7 +259,7 @@ class ScreenController < ApplicationController
   def displayauth
     respond_to do |format|
       if params[:hostname]
-        session[:display_authentication] = true 
+        session[:display_authentication] = true
         session[:hostname] = params[:hostname] if params[:hostname]
         format.html { redirect_to conductor_screen_path( :resolution => params[:resolution] ) }
       else
@@ -269,11 +273,16 @@ class ScreenController < ApplicationController
   def slide_to_screen_html(resolution, slide)
     @resolution = resolution
     @slide = slide
+    channel = slide.channel
+    layout =
+      (channel and channel.theme) ?
+        "slide_#{channel.theme}" : "slide_gold"
+
     # Slide may be the "display_non_active_body" when
     # display is inactive or no channel is set.
     # Use default theme "gold".
-    theme = 
-      (@slide.channel and @slide.channel.theme?) ? 
+    theme =
+      (@slide.channel and @slide.channel.theme?) ?
         @slide.channel.theme : "gold"
     render_to_string("client_#{slide.template}.html.erb",
       :layout => "slide",
@@ -283,13 +292,13 @@ class ScreenController < ApplicationController
   def auth_require
     if preview?
       require_user
-      @channel = Channel.find(params[:channel_id]) if params[:channel_id]
-      @channel = Slide.find(params[:slide_id]).channel if params[:slide_id]
+      @channels = [Channel.find(params[:channel_id])] if params[:channel_id]
+      @channels = [Slide.find(params[:slide_id]).channel] if params[:slide_id]
     else
       if session[:display_authentication]
         logger.info "Display #{session["hostname"]}, session_id #{session["session_id"]}"
         @display = Display.find_or_create_by_hostname(session[:hostname])
-        @channel = @display.active ? @display.channel : nil
+        @channels = @display.active ? @display.channels : nil
       else
         respond_to do |format|
           format.html { redirect_to display_authentication_path( :resolution => params[:resolution],
