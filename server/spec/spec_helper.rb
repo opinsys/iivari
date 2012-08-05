@@ -8,12 +8,16 @@ require 'rspec/autorun'
 require 'authlogic/test_case'
 include Authlogic::TestCase
 
+require 'declarative_authorization/maintenance'
+include Authorization::TestHelper
+
 require 'factory_girl'
-Factory.define :valid_user, :class => User do |u| 
-  u.login "Test User"
+Factory.define :valid_user, :class => User do |u|
+  u.login "Test User #{Digest::MD5.hexdigest(Time.now.to_s)}"
   u.persistence_token lambda{(0...8).map{65.+(rand(25)).chr}.join} # random string
   u.puavo_id 1
   u.role_symbols [:organisation_owner]
+  u.organisation "default"
 end
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -55,16 +59,15 @@ RSpec.configure do |config|
     @organisation.host = '*'
     Organisation.current= @organisation
 
-    # authlogic will raise an error if factory girl attempts to create
-    # same user more than once, prevent that.
-    user = User.find_by_login("Test User")
-    user.destroy if user
+    server = "test_puavo_api_server"
+    username = "test_puavo_api_username"
+    password = "test_puavo_api_password"
+    ssl = true
+    @puavo_api = Puavo::Client::Base.new( server, username, password, ssl )
+  end
 
-    # authorize user
-    activate_authlogic
-    @user = Factory.create(:valid_user)
-    #UserSession.create(@user)
-    Authorization.stub!(:current_user).and_return(@user)
+  config.after(:each) do
+    @user.destroy if @user
   end
 end
 
