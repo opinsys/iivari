@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120207000000) do
+ActiveRecord::Schema.define(:version => 20120812140708) do
 
   create_table "channels", :force => true do |t|
     t.string   "name"
@@ -30,6 +30,19 @@ ActiveRecord::Schema.define(:version => 20120207000000) do
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
     t.datetime "last_seen_at"
+  end
+
+  create_table "docsplit_tasks", :force => true do |t|
+    t.integer  "channel_id"
+    t.string   "document_file_path",                    :null => false
+    t.string   "original_file_name"
+    t.boolean  "pending",            :default => true
+    t.integer  "progress",           :default => 0
+    t.boolean  "resolved",           :default => false
+    t.boolean  "rejected",           :default => false
+    t.text     "error"
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
   end
 
   create_table "images", :force => true do |t|
