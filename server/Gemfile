@@ -35,6 +35,7 @@ gem 'tinymce-rails', :git => "git://github.com/spohlenz/tinymce-rails.git"
 gem "simple_form"
 gem "responders"
 gem 'rmagick', :require => 'RMagick'
+gem "docsplit"
 
 group :development do
   gem 'sqlite3'
