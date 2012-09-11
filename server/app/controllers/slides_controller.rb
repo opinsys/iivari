@@ -12,6 +12,14 @@ class SlidesController < ApplicationController
   # GET /slides.xml
   def index
     @slides = @channel.slides
+    # Count pending docsplit background tasks.
+    # If there are any incomplete tasks, client
+    # javascript will notify the user of this and
+    # refresh the page when all tasks are ready.
+    @pending_docsplit_task_count = DocsplitTask.count :conditions => {
+      :channel_id => @channel.id,
+      :pending => true
+      }
     respond_with(@slides)
   end
 

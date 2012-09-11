@@ -1,6 +1,20 @@
 <% content_for :javascript do %>
   <%= javascript_include_tag "slides/index" %>
+
+  <% if @pending_docsplit_task_count > 0 %>
+    <%= javascript_tag do %>
+      $(document).ready(function(){
+        (new Iivari.Views.DocscplitTaskView(
+          <%= @school.puavo_id -%>,
+          <%= @channel.id -%>,
+          <%= @pending_docsplit_task_count -%>
+          )).start();
+      });
+    <% end %>
+  <% end %>
 <% end %>
+
+
 
 <h1><%= t('.title', :name => h(@channel.name)).html_safe %></h1>
 

@@ -7,9 +7,16 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui
+//= require_self
+//= require ./views/docsplit-task
 
 /** Console logger may not be available. Shiv to /dev/null. */
 if(typeof(console) === 'undefined') {
     var console = {};
     console.log = console.error = console.info = console.debug = console.warn = function() {};
 }
+
+window.Iivari = {
+    Models: {},
+    Views: {}
+};
