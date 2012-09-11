@@ -1,0 +1,16 @@
+<%= form_for(@channel,
+  :url => "doc_upload",
+  :method => "post",
+  :html => { :multipart => true }) do |f| %>
+
+  <div id="document-upload">
+    <label for="channel_document">
+      <%= t(".label") %>
+    </label><br>
+    <%= f.file_field :document, :accept => "application/pdf" %>
+    <%= f.submit t(".submit") %>
+  </div>
+
+  <%= t('links.or_cancel') %> <%= link_to t('links.cancel'), channel_slides_path(@school.puavo_id, @channel) %>
+
+<% end %>

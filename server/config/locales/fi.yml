@@ -81,6 +81,7 @@ fi:
     destroy: Poista
     new_channel: Uusi kanava
     new_slides: Lisää uusi ruutu
+    doc_upload: Lisää ruutuja pdf-dokumentista
     logout: Kirjaudu ulos
     channels: Kanavat
     displays: Näytöt
@@ -110,6 +111,9 @@ fi:
       title: Kanavan tietojen muokkaus
     form:
       theme: Teema
+    doc_upload:
+      label: Lisää ruutuja pdf-dokumentista
+      submit: Lähetä
   themes:
     gold: Kulta
     green: Vihreä

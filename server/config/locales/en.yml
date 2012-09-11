@@ -84,6 +84,7 @@ en:
     destroy: Destroy
     new_channel: New Channel
     new_slides: New Slide
+    doc_upload: New Slides from a PDF document
     logout: Logout
     channels: Channels
     displays: Displays
@@ -113,6 +114,9 @@ en:
       title: Editing channel
     form:
       theme: Theme
+    doc_upload:
+      label: New Slides from a PDF document
+      submit: Upload
   themes:
     gold: Gold
     green: Green

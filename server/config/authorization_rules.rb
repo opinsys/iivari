@@ -26,7 +26,7 @@ end
 
 privileges do
   privilege :manage do
-    includes :create, :read, :edit, :update, :destroy, :new, :delete
+    includes :create, :read, :edit, :update, :destroy, :new, :delete, :doc_upload, :doc_upload_progress
   end
   privilege :read do
     includes :index, :show

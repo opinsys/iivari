@@ -13,6 +13,10 @@ Iivari::Application.routes.draw do
 
   match '/channels/welcome', :to => "channels#welcome", :as => 'welcome'
   resources :channels, :path => ':school_id/channels' do
+    get :doc_upload
+    post :doc_upload
+    get :doc_upload_progress
+
     resources :slides do
       post :sort, :on => :collection
       member do

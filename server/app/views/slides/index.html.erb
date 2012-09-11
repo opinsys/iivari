@@ -56,4 +56,5 @@
              :id => "previewSlides" )  %>
 </div>
 <div><%= link_to t('links.new_slides'), new_channel_slide_path %></div>
+<div><%= link_to t('links.doc_upload'), channel_doc_upload_path( @school.puavo_id, @channel ) %></div>
 <% end %>
