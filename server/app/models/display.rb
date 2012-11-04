@@ -4,6 +4,9 @@ class Display < OrganisationData
   validates_presence_of :hostname
 
   def self.find_all_by_school_id(school_id, puavo_api)
+    if Iivari::Application.config.standalone_mode
+      return all
+    end
     # FIXME: get devices by type
     puavo_devices = puavo_api.devices.find_by_school_id(school_id)
     all.select do |display|

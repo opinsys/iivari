@@ -6,6 +6,21 @@ components - this is the server, a Ruby on Rails (v3) application.
 
 See the [installation instructions in the wiki](/opinsys/iivari/wiki/Server-installation-instructions)
 
+**THIS BRANCH CONTAINS A STANDALONE VERSION WITH OPTIONAL PUAVO INTEGRATION**
+
+To create the first admin user, you must do it manually from
+the Rails console. After following the installation procedure:
+
+    cd iivari/server
+    bundle exec rails console
+    > User.create :login => "admin", :password => "....."
+
+To change the password:
+
+    > user = User.find_by_login "admin"
+    > user.password = "new password"
+    > user.save
+
 
 Copyright
 =========

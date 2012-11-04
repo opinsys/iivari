@@ -16,9 +16,17 @@ class UserSessionsController < ApplicationController
         logger.info "Authlogic errors: %s" % @user_session.errors.inspect
         format.html { render :action => :new }
       else
-        session[:owners] = puavo_api.organisation.find.owners
-        session[:schools] = puavo_api.schools.all
-        session[:user_groups] = puavo_api.groups.find_all_by_memberUid(current_user.login)
+        if Iivari::Application.config.standalone_mode
+          school = Puavo::Client::School.new(puavo_api, {"puavo_id" => 2, "name" => "example"})
+          session[:owners] = [current_user.puavo_id]
+          session[:schools] = [school]
+          session[:user_groups] = []
+
+        else
+          session[:owners] = puavo_api.organisation.find.owners
+          session[:schools] = puavo_api.schools.all
+          session[:user_groups] = puavo_api.groups.find_all_by_memberUid(current_user.login)
+        end
         format.html { redirect_to welcome_url }
       end
     end

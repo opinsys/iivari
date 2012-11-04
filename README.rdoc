@@ -25,8 +25,8 @@ Available slide layouts:
 * embedded external webpage (URL)
 
 The development of Iivari has been done in parallel with Puavo.
-Currently admin users can be authenticated only against an LDAP server,
-but there are plans to make it more flexible.
+For ad-hoc standalone setups, this branch introduces an option
+to disable LDAP and Puavo integration.
 
 
 == Copyright

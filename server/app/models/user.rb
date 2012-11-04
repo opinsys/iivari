@@ -40,4 +40,19 @@ class User < OrganisationData
       false
     end
   end
+
+  # Standalone mode login for small setups.
+  def self.standalone_login(login)
+    logger.info "Authenticating local user #{login} in STANDALONE mode"
+    User.find_by_login login
+  end
+
+  public
+
+  # Standalone mode puavo_id hack, return user.id
+  def puavo_id
+    Iivari::Application.config.standalone_mode ?
+      id : read_attribute(:puavo_id)
+  end
+
 end
