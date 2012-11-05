@@ -24,11 +24,11 @@ ActiveRecord::Schema.define(:version => 20120207000000) do
 
   create_table "displays", :force => true do |t|
     t.boolean  "active",       :default => false
+    t.integer  "channel_id"
     t.string   "hostname"
     t.string   "organisation"
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
-    t.integer  "channel_id"
     t.datetime "last_seen_at"
   end
 
