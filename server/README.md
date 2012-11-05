@@ -8,6 +8,11 @@ See the [installation instructions in the wiki](/opinsys/iivari/wiki/Server-inst
 
 **THIS BRANCH CONTAINS A STANDALONE VERSION WITH OPTIONAL PUAVO INTEGRATION**
 
+Checkout from the `standalone` branch:
+
+    cd iivari
+    git checkout -t origin/standalone
+
 To create the first admin user, you must do it manually from
 the Rails console. After following the installation procedure:
 
@@ -20,6 +25,12 @@ To change the password:
     > user = User.find_by_login "admin"
     > user.password = "new password"
     > user.save
+
+To have transition effects between slides, merge in the experimental `develop+superslides` branch. Slide timers do not work yet.
+
+    cd iivari
+    git branch --track superslides origin/develop+superslides
+    git merge superslides
 
 
 Copyright
