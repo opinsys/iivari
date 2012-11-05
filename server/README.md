@@ -6,12 +6,20 @@ components - this is the server, a Ruby on Rails (v3) application.
 
 See the [installation instructions in the wiki](/opinsys/iivari/wiki/Server-installation-instructions)
 
+
+Standalone branch
+-----------------
+
 **THIS BRANCH CONTAINS A STANDALONE VERSION WITH OPTIONAL PUAVO INTEGRATION**
 
 Checkout from the `standalone` branch:
 
     cd iivari
     git checkout -t origin/standalone
+
+
+Standalone users
+----------------
 
 To create the first admin user, you must do it manually from
 the Rails console. After following the installation procedure:
@@ -25,6 +33,16 @@ To change the password:
     > user = User.find_by_login "admin"
     > user.password = "new password"
     > user.save
+
+
+Keeping in sync with new features
+---------------------------------
+
+The `standalone` branch may be outdated. Check in new changes from the `develop` branch:
+
+    cd iivari
+    git branch --track develop origin/develop
+    get merge develop
 
 To have transition effects between slides, merge in the experimental `develop+superslides` branch. Slide timers do not work yet.
 
