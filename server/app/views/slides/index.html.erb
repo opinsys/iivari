@@ -31,7 +31,7 @@
         </td>
 	<td rowspan="2">
 	  <%= content_tag("iframe",
-                  { :style => "z-index: -1;",
+                  { :class => (slide.active? ? "active_slide" : "inactive_slide"),
                     :scrolling => "no",
                     :height => "150",
                     :width => "250",
@@ -52,6 +52,16 @@
 	  <%= link_to image_tag('edit-delete.png', :title => t('links.destroy') ), channel_slide_path(@school.puavo_id, @channel, slide), :confirm => t('.confirm'), :method => :delete, :title => t('links.destroy') %>
 	</td>
       </tr>
+
+      <% unless slide.active? %>
+        <tr>
+          <td></td>
+          <td colspan="2">
+            <div><%= t('.inactive_slide') -%></div>
+          </td>
+        </tr>
+      <% end %>
+
     </table>
     <hr />
   </li>

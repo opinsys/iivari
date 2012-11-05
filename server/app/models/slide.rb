@@ -1,7 +1,7 @@
 class Slide < OrganisationData
   belongs_to :channel
   has_many :slide_timers
-  
+
   acts_as_list :scope => :channel
 
   before_save :fix_http_url, :remove_image_if_needed
@@ -24,7 +24,7 @@ class Slide < OrganisationData
       "image/#{self.template}/#{self.image}?resolution=#{resolution}"
     end
   end
-  
+
   def image_type
     Image.find_by_key(self.image).content_type
   end
@@ -48,6 +48,22 @@ class Slide < OrganisationData
     self.channel && self.channel.slide_delay ? self.channel.slide_delay : 15
   end
 
+  def active?
+    status
+  end
+
+  # Used to scale gif animations in the template
+  def style
+    logger.debug "XXX"
+    logger.debug self.image
+    if image_type == 'image/gif'
+        "width: 80%"
+    else
+      ""
+    end
+  end
+
+>>>>>>> b44c28e... Show slide status in slide listing
   protected
 
   def set_channel_updated_at

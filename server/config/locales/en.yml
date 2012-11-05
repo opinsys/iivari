@@ -129,6 +129,7 @@ en:
       title: Listing slides
       confirm: Are you sure?
       drag: [Drag]
+      inactive_slide: Slide is inactive
     new:
       title: New slide
     template:

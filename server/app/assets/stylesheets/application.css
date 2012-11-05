@@ -109,3 +109,13 @@ iframe.slide_show {
     z-index: -1;
     border: 10px ridge #94AA29;
 }
+
+.active_slide {
+    z-index: -1;
+}
+.inactive_slide {
+    z-index: -1;
+    opacity: 0.4;
+    background: #222;
+}
+

@@ -8,4 +8,8 @@
 <div><%= link_to t('links.show'), channel_slide_path(@school.puavo_id, @channel, @slide), :class => "show"  %></div>
 <% end %>
 
+<%# slide_status_toggle button is interfered
+    by tinymce, hence it cannot be used here as it is %>
+
 <%= render :partial => 'tinymce_init' -%>
+
