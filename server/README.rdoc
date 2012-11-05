@@ -3,7 +3,7 @@
 Iivari is a digital signage system. It consists of client and server
 components - this is the server, a Ruby on Rails (v3) application.
 
-See the [installation instructions in the wiki](/opinsys/iivari/wiki/Server-installation-instructions)
+See the {installation instructions in the wiki}[/opinsys/iivari/wiki/Server-installation-instructions]
 
 
 == Copyright
